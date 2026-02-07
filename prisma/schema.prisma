@@ -1,0 +1,84 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  listings  Listing[]
+  bids      Bid[]
+  wishlist  Wishlist[]
+}
+
+model Listing {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  areaName        String
+  zone            String
+  propertyType    String   @default("Residential")
+  area            Int      // in sqft
+  configuration   String   // 1BHK, 2BHK, etc.
+  ratePerSqft     Int
+  totalPrice      Int
+  minBidAmount    Int
+  maxBidAmount    Int
+  status          String   @default("active") // active, sold, closed
+  imageUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bids            Bid[]
+  wishlistedBy    Wishlist[]
+}
+
+model Bid {
+  id          String   @id @default(uuid())
+  amount      Int
+  status      String   @default("pending") // pending, accepted, rejected
+  createdAt   DateTime @default(now())
+  
+  listingId   String
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+}
+
+
+model HistoricalPrice {
+  id          String   @id @default(uuid())
+  areaName    String
+  zone        String
+  ratePerSqft Int
+  date        DateTime
+  dataSource  String   @default("synthetic")
+  
+  @@index([areaName])
+  @@index([zone])
+}
