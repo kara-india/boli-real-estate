@@ -40,11 +40,18 @@ export default function Header() {
                     {/* Navigation */}
                     <nav className="hidden md:flex items-center gap-6">
                         <Link
+                            href="/"
+                            className={`text-sm font-medium transition-all hover:text-blue-400 ${pathname === '/' ? 'text-blue-400' : 'text-gray-300'
+                                }`}
+                        >
+                            Home
+                        </Link>
+                        <Link
                             href="/listings"
                             className={`text-sm font-medium transition-all hover:text-blue-400 ${pathname === '/listings' ? 'text-blue-400' : 'text-gray-300'
                                 }`}
                         >
-                            Browse Properties
+                            Browse
                         </Link>
                         <Link
                             href="/analytics"
