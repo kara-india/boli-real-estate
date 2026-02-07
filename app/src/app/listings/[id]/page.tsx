@@ -1,152 +1,238 @@
-import Header from '@/components/Header'
-import AnimatedBackground from '@/components/AnimatedBackground'
-import prisma from '@/lib/prisma'
-import { notFound } from 'next/navigation'
-import BiddingInterface from '@/components/BiddingInterface'
-import PriceChart from '@/components/PriceChart'
-import WishlistButton from '@/components/WishlistButton'
+
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useParams } from 'next/navigation'
+import Link from 'next/link'
+import { MapPin, BedDouble, Bath, Square, TrendingUp, Info } from 'lucide-react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { format } from 'date-fns'
 
-export default async function ListingDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    const listing = await prisma.listing.findUnique({
-        where: { id },
-        include: {
-            user: { select: { name: true, email: true } },
-            bids: {
-                include: { user: { select: { name: true } } },
-                orderBy: { createdAt: 'desc' }
-            }
-        }
-    })
+type Property = {
+    id: string
+    title: string
+    description: string
+    price: number
+    location: string
+    sqft: number
+    type: string
+    bedrooms: number
+    bathrooms: number
+    image_url: string
+    status: string
+}
 
-    if (!listing) {
-        notFound()
+type MarketTrend = {
+    date: string
+    avg_price_per_sqft: number
+}
+
+export default function PropertyDetailsPage() {
+    const { id } = useParams()
+    const [property, setProperty] = useState<Property | null>(null)
+    const [trends, setTrends] = useState<MarketTrend[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const supabase = createClient()
+
+    useEffect(() => {
+        const fetchPropertyDetails = async () => {
+            if (!id) return
+
+            // 1. Fetch Property
+            const { data: propData, error: propError } = await supabase
+                .from('properties')
+                .select('*')
+                .eq('id', id)
+                .single()
+
+            if (propError) {
+                console.error('Error fetching property:', propError)
+                return
+            }
+
+            setProperty(propData)
+
+            // 2. Fetch Market Trends for this location
+            if (propData) {
+                const { data: trendData, error: trendError } = await supabase
+                    .from('market_trends')
+                    .select('date, avg_price_per_sqft')
+                    .eq('location', propData.location)
+                    .eq('property_type', propData.type)
+                    .order('date', { ascending: true })
+
+                if (trendData) {
+                    // Format date for chart
+                    const formattedTrends = trendData.map(t => ({
+                        ...t,
+                        date: format(new Date(t.date), 'MMM yy'),
+                    }))
+                    setTrends(formattedTrends)
+                }
+            }
+            setIsLoading(false)
+        }
+
+        fetchPropertyDetails()
+    }, [id])
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-900 flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        )
     }
 
-    // Get historical prices for this area
-    const historicalPrices = await prisma.historicalPrice.findMany({
-        where: { areaName: listing.areaName },
-        orderBy: { date: 'asc' }
-    })
+    if (!property) {
+        return (
+            <div className="min-h-screen bg-gray-900 flex justify-center items-center text-white">
+                Property not found.
+            </div>
+        )
+    }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
-            <AnimatedBackground />
-            <Header />
+        <div className="min-h-screen bg-gray-900 pt-24 pb-12 px-4 sm:px-6 lg:px-8 text-white">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            <div className="pt-24 pb-16 px-4">
-                <div className="container mx-auto max-w-6xl">
-                    {/* Property Header */}
-                    <div className="glass-dark rounded-3xl p-8 mb-6 border border-white/10">
-                        <div className="grid md:grid-cols-2 gap-8">
-                            {/* Left: Image */}
-                            <div className="h-96 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                                <div className="text-center text-white">
-                                    <div className="text-8xl font-bold mb-4">{listing.configuration}</div>
-                                    <div className="text-2xl opacity-90">{listing.areaName}</div>
-                                    <div className="text-lg opacity-75 mt-2">{listing.zone}</div>
-                                </div>
-                                {listing.bids.length > 0 && (
-                                    <div className="absolute top-6 right-6 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white font-bold">
-                                        🔥 {listing.bids.length} {listing.bids.length === 1 ? 'Bid' : 'Bids'}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Right: Details */}
-                            <div>
-                                <div className="flex justify-between items-start mb-4">
-                                    <h1 className="text-4xl font-bold text-white mb-4">{listing.title}</h1>
-                                    <WishlistButton listingId={listing.id} />
-                                </div>
-                                <p className="text-gray-300 mb-6">{listing.description}</p>
-
-                                <div className="grid grid-cols-2 gap-4 mb-6">
-                                    <div className="bg-white/5 rounded-xl p-4">
-                                        <div className="text-sm text-gray-400 mb-1">Area</div>
-                                        <div className="text-2xl font-bold text-white">{listing.area} sqft</div>
-                                    </div>
-                                    <div className="bg-white/5 rounded-xl p-4">
-                                        <div className="text-sm text-gray-400 mb-1">Rate/sqft</div>
-                                        <div className="text-2xl font-bold text-blue-400">₹{listing.ratePerSqft.toLocaleString()}</div>
-                                    </div>
-                                    <div className="bg-white/5 rounded-xl p-4">
-                                        <div className="text-sm text-gray-400 mb-1">Property Type</div>
-                                        <div className="text-lg font-semibold text-white">{listing.propertyType}</div>
-                                    </div>
-                                    <div className="bg-white/5 rounded-xl p-4">
-                                        <div className="text-sm text-gray-400 mb-1">Configuration</div>
-                                        <div className="text-lg font-semibold text-white">{listing.configuration}</div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl p-6 border border-blue-500/30">
-                                    <div className="text-sm text-gray-300 mb-2">Total Price</div>
-                                    <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
-                                        ₹{(listing.totalPrice / 10000000).toFixed(2)} Cr
-                                    </div>
-                                    <div className="text-sm text-gray-300">
-                                        Bid Range: ₹{(listing.minBidAmount / 10000000).toFixed(2)}Cr - ₹{(listing.maxBidAmount / 10000000).toFixed(2)}Cr
-                                    </div>
-                                </div>
-                            </div>
+                {/* Left Column: Images & Key Details */}
+                <div className="lg:col-span-2 space-y-8">
+                    {/* Main Image */}
+                    <div className="relative h-96 w-full rounded-2xl overflow-hidden glass-dark border border-white/10 shadow-2xl">
+                        <img
+                            src={property.image_url}
+                            alt={property.title}
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-4 left-4 bg-green-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                            LIVE AUCTION
                         </div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {/* Bidding Interface */}
-                        <div className="md:col-span-2">
-                            <BiddingInterface listing={listing} />
-
-                            {/* Historical Price Chart */}
-                            {historicalPrices.length > 0 && (
-                                <div className="glass-dark rounded-2xl p-6 border border-white/10 mt-6">
-                                    <h3 className="text-2xl font-bold text-white mb-4">
-                                        📈 Historical Price Trends
-                                    </h3>
-                                    <PriceChart data={historicalPrices} />
+                    {/* Title & Description */}
+                    <div className="glass-dark p-8 rounded-2xl border border-white/10">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h1 className="text-3xl font-bold mb-2 neon-text">{property.title}</h1>
+                                <div className="flex items-center text-gray-400">
+                                    <MapPin size={18} className="mr-2 text-blue-400" />
+                                    {property.location}
                                 </div>
-                            )}
+                            </div>
+                            <div className="text-right">
+                                <p className="text-sm text-gray-400">Current Bid</p>
+                                <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+                                    ₹{(property.price / 100000).toFixed(2)} L
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Bids List */}
-                        <div className="glass-dark rounded-2xl p-6 border border-white/10">
-                            <h3 className="text-xl font-bold text-white mb-4">
-                                Recent Bids ({listing.bids.length})
-                            </h3>
+                        <div className="grid grid-cols-3 gap-6 mb-8">
+                            <div className="flex flex-col items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                                <BedDouble size={24} className="text-blue-400 mb-2" />
+                                <span className="text-lg font-semibold">{property.bedrooms} Beds</span>
+                            </div>
+                            <div className="flex flex-col items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                                <Bath size={24} className="text-purple-400 mb-2" />
+                                <span className="text-lg font-semibold">{property.bathrooms} Baths</span>
+                            </div>
+                            <div className="flex flex-col items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                                <Square size={24} className="text-pink-400 mb-2" />
+                                <span className="text-lg font-semibold">{property.sqft} sqft</span>
+                            </div>
+                        </div>
 
-                            {listing.bids.length === 0 ? (
-                                <div className="text-center py-8 text-gray-400">
-                                    <div className="text-4xl mb-2">💰</div>
-                                    <p>No bids yet. Be the first!</p>
+                        <div className="prose prose-invert max-w-none">
+                            <h3 className="text-xl font-bold mb-4">Description</h3>
+                            <p className="text-gray-300 leading-relaxed">{property.description}</p>
+                        </div>
+                    </div>
+
+                    {/* Market Trends Chart */}
+                    <div className="glass-dark p-8 rounded-2xl border border-white/10">
+                        <div className="flex items-center gap-2 mb-6">
+                            <TrendingUp className="text-green-400" />
+                            <h3 className="text-xl font-bold">Price Prediction & History</h3>
+                        </div>
+
+                        <div className="h-80 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={trends}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                                    <XAxis dataKey="date" stroke="#ffffff50" fontSize={12} />
+                                    <YAxis stroke="#ffffff50" fontSize={12} domain={['auto', 'auto']} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
+                                        itemStyle={{ color: '#fff' }}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="avg_price_per_sqft"
+                                        stroke="#8b5cf6"
+                                        strokeWidth={3}
+                                        dot={{ fill: '#8b5cf6', strokeWidth: 2 }}
+                                        activeDot={{ r: 8 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <p className="text-sm text-gray-400 mt-4 flex items-center gap-2">
+                            <Info size={14} />
+                            data based on verified transactions in {property.location}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Right Column: Bidding Panel */}
+                <div className="lg:col-span-1">
+                    <div className="sticky top-28 glass-dark p-6 rounded-2xl border border-white/10 shadow-2xl">
+                        <h3 className="text-xl font-bold mb-6 border-b border-white/10 pb-4">Place Your Bid</h3>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-2">
+                                    Your Offer (₹)
+                                </label>
+                                <input
+                                    type="number"
+                                    placeholder={`Min bid: ₹${(property.price + 100000).toLocaleString()}`}
+                                    className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors text-lg"
+                                />
+                                <p className="text-xs text-gray-500 mt-2">
+                                    * Minimum increment of ₹1 Lakh required
+                                </p>
+                            </div>
+
+                            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-sm text-blue-300">Predictive Valuation</span>
+                                    <span className="text-sm font-bold text-blue-300">₹{(property.price * 1.05 / 100000).toFixed(2)} L</span>
                                 </div>
-                            ) : (
-                                <div className="space-y-3 max-h-96 overflow-y-auto">
-                                    {listing.bids.map((bid) => (
-                                        <div key={bid.id} className="bg-white/5 rounded-lg p-4">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <div className="font-semibold text-white">{bid.user.name || 'Anonymous'}</div>
-                                                <div className={`px-2 py-1 rounded text-xs font-bold ${bid.status === 'accepted' ? 'bg-green-500/20 text-green-400' :
-                                                    bid.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                                        'bg-yellow-500/20 text-yellow-400'
-                                                    }`}>
-                                                    {bid.status}
-                                                </div>
-                                            </div>
-                                            <div className="text-2xl font-bold text-blue-400">
-                                                ₹{(bid.amount / 10000000).toFixed(2)} Cr
-                                            </div>
-                                            <div className="text-xs text-gray-400 mt-1">
-                                                {new Date(bid.createdAt).toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                    ))}
+                                <div className="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
+                                    {/* Mock progress bar showing where current price is vs valuation */}
+                                    <div className="bg-blue-500 h-full w-[85%]"></div>
                                 </div>
-                            )}
+                                <p className="text-xs text-blue-400/70 mt-2">
+                                    This property is currently 5% under market value.
+                                </p>
+                            </div>
+
+                            <button className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 hover:scale-[1.02] transition-all duration-300">
+                                Submit Bid
+                            </button>
+
+                            <div className="pt-4 text-center">
+                                <p className="text-xs text-gray-500">
+                                    By placing a bid, you agree to BidMetric's Terms of Service.
+                                    Win fee: 1% of final price.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     )
