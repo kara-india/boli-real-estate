@@ -3,9 +3,10 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { format } from 'date-fns'
 import { ArrowUpRight, ArrowDownRight, MapPin, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 
 type MarketTrend = {
     location: string
@@ -35,11 +36,11 @@ export default function AnalyticsPage() {
         }
 
         fetchTrends()
-    }, [])
+    }, [supabase])
 
     // Helper to group data by location for the chart
     const getChartData = () => {
-        const dataByDate: any = {}
+        const dataByDate: Record<string, Record<string, string | number>> = {}
 
         trends.forEach(trend => {
             const dateStr = format(new Date(trend.date), 'MMM yy')
@@ -81,7 +82,7 @@ export default function AnalyticsPage() {
                 <div className="mb-10 text-center">
                     <h1 className="text-4xl font-bold mb-4 neon-text">City Intelligence & Analytics</h1>
                     <p className="text-gray-400 max-w-2xl mx-auto">
-                        Real-time market insights powered by BidMetric's data engine. Make informed decisions with historical price trends and predictive valuations.
+                        Real-time market insights powered by BidMetric&apos;s data engine. Make informed decisions with historical price trends and predictive valuations.
                     </p>
                 </div>
 

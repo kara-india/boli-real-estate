@@ -66,7 +66,7 @@ export default function DashboardPage() {
                 toast.error('Failed to load dashboard')
             } else {
                 // Cast the result to our type (Supabase types can be tricky with joins)
-                setBids((data as any) || [])
+                setBids((data as unknown as UserBid[]) || [])
             }
             setIsLoading(false)
         }

@@ -130,8 +130,9 @@ export default function PropertyDetailsPage() {
 
             toast.success('Bid placed successfully!')
             setBidAmount('')
-        } catch (error: Error | any) {
-            toast.error(error.message || 'Failed to place bid')
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Failed to place bid'
+            toast.error(message)
         } finally {
             setIsBidding(false)
         }

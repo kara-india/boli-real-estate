@@ -68,9 +68,10 @@ export default function CreateListingPage() {
 
             toast.success('Property listed successfully!')
             router.push('/dashboard/seller') // Redirect to seller dashboard to see it
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error creating listing:', error)
-            toast.error(error.message || 'Failed to create listing')
+            const message = error instanceof Error ? error.message : 'Failed to create listing'
+            toast.error(message)
         } finally {
             setIsLoading(false)
         }

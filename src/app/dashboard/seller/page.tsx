@@ -5,10 +5,18 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Loader2, TrendingUp, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { Loader2, TrendingUp, CheckCircle } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 // Define types for seller's properties and bids
+type Bid = {
+    id: string
+    amount: number
+    status: string
+    created_at: string
+    bidder_id: string
+}
+
 type Listing = {
     id: string
     title: string
@@ -16,15 +24,7 @@ type Listing = {
     location: string
     status: string
     image_url: string
-    bids: {
-        id: string
-        amount: number
-        status: string
-        created_at: string
-        bidder: {
-            email: string
-        }
-    }[]
+    bids: Bid[]
 }
 
 export default function SellerDashboardPage() {
@@ -64,7 +64,7 @@ export default function SellerDashboardPage() {
             } else {
                 // Fetch bidder emails separately for privacy/display (mocked for now or fetched via join if possible)
                 // For simplicity in MVP, showing bidder ID or "User".
-                setListings(data as any || [])
+                setListings((data as unknown as Listing[]) || [])
             }
             setIsLoading(false)
         }
@@ -100,8 +100,9 @@ export default function SellerDashboardPage() {
                 return listing
             }))
 
-        } catch (error: any) {
-            toast.error(error.message || 'Failed to accept bid')
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Failed to accept bid'
+            toast.error(message)
             console.error(error)
         }
     }
@@ -149,6 +150,7 @@ export default function SellerDashboardPage() {
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-white/10 pb-4">
                                     <div className="flex items-center gap-4">
                                         <div className="h-16 w-16 rounded-lg overflow-hidden flex-shrink-0">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src={listing.image_url} alt={listing.title} className="w-full h-full object-cover" />
                                         </div>
                                         <div>
