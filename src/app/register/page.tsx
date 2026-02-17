@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
     User, ShieldCheck, Briefcase, ChevronRight, ArrowLeft,
@@ -15,7 +15,7 @@ type Role = 'buyer' | 'rera_seller' | 'channel_partner';
 type Step = 'role' | 'identity' | 'verification' | 'details' | 'success';
 type AuthMethod = 'google' | 'email' | 'none';
 
-export default function RegisterPage() {
+function RegisterContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const supabase = createClient();
@@ -557,5 +557,20 @@ export default function RegisterPage() {
                 }
             `}</style>
         </div>
+    );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-[#0A0A0B] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-12 h-12 text-gold animate-spin" />
+                    <p className="text-gold font-black uppercase tracking-widest text-[10px]">Initializing Secure Flow...</p>
+                </div>
+            </div>
+        }>
+            <RegisterContent />
+        </Suspense>
     );
 }
