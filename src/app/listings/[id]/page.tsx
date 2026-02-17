@@ -242,7 +242,7 @@ export default function PropertyDetailsPage() {
                             {activeTab === 'valuation' && valuation && (
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <ValuationFactorsChart factors={valuation.topFactors} totalValuation={valuation.aiValuation} />
+                                        <ValuationFactorsChart factors={valuation.topFactors} totalValuation={valuation.aiValuation} methodology={valuation.methodology} />
                                         <div className="space-y-4">
                                             <h3 className="font-bold text-gray-700">Why this price?</h3>
                                             <p className="text-sm text-gray-500 leading-relaxed">{valuation.methodology}</p>
@@ -268,8 +268,8 @@ export default function PropertyDetailsPage() {
                                             </div>
                                         </div>
                                         <div className={`px-4 py-1 rounded-full text-sm font-bold ${(property.builder_confidence_score || 0) >= 80 ? 'bg-green-100 text-green-700' :
-                                                (property.builder_confidence_score || 0) >= 60 ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-red-100 text-red-700'
+                                            (property.builder_confidence_score || 0) >= 60 ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-red-100 text-red-700'
                                             }`}>
                                             {(property.builder_confidence_score || 0) >= 80 ? 'HIGH TRUST' :
                                                 (property.builder_confidence_score || 0) >= 60 ? 'MODERATE' : 'LOW TRUST'}
