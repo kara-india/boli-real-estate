@@ -117,7 +117,7 @@ export default function SellerDashboardPage() {
                         <p className="text-gray-500 font-light mt-1">Monitor market interest and manage incoming offers for your portfolio.</p>
                     </div>
                     <Link
-                        href="/listings/create"
+                        href="/dashboard/listings/create"
                         className="flex items-center gap-2 px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold text-lg hover:bg-black transition-all shadow-xl shadow-gray-200"
                     >
                         <Plus size={20} />
@@ -131,7 +131,7 @@ export default function SellerDashboardPage() {
                         <h3 className="text-2xl font-bold text-gray-900 mb-2">No Active Portfolio</h3>
                         <p className="text-gray-400 mb-10 max-w-sm mx-auto font-light">You haven&apos;t listed any properties yet. Start your selling journey with Boli today.</p>
                         <Link
-                            href="/listings/create"
+                            href="/dashboard/listings/create"
                             className="px-10 py-4 bg-gold text-white rounded-2xl font-bold transition-all shadow-lg shadow-gold/20 hover:shadow-gold/30 hover:-translate-y-0.5"
                         >
                             Create Your First Listing
