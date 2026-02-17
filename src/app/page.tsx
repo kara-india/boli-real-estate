@@ -1,139 +1,108 @@
-import AnimatedBackground from '@/components/AnimatedBackground'
+
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { ShieldCheck, Zap, ArrowRight, Building, Award } from 'lucide-react'
 
 export default async function Home() {
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white overflow-hidden">
-      <AnimatedBackground />
+    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-gold/20">
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4">
-        <div className="container mx-auto text-center">
-          {/* Main Heading */}
-          <div className="mb-8">
-            <h1 className="text-6xl md:text-8xl font-bold mb-4 neon-text">
-              Welcome to <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">BidMetric</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-              Real Estate Intelligence & Transparent Bidding • Smart Valuation
-            </p>
+      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Background Decorative Blob */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-gold/5 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-gold/5 rounded-full blur-3xl -z-10"></div>
+
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 text-gold-dark text-xs font-bold uppercase tracking-widest border border-gold/20">
+            <Award size={14} className="text-gold" />
+            V 2.0 Now Live
           </div>
 
-          {/* CTA Buttons */}
-          {!session ? (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-              <Link
-                href="/signup"
-                className="px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105 neon-glow"
-              >
-                🚀 Register Now
-              </Link>
-              <Link
-                href="/login"
-                className="px-8 py-4 glass rounded-xl font-bold text-lg hover:bg-white/20 transition-all"
-              >
-                🔐 Log In
-              </Link>
-            </div>
-          ) : (
-            <div className="flex gap-4 justify-center items-center mb-16">
-              <Link
-                href="/listings"
-                className="px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105"
-              >
-                🏠 Browse Properties
-              </Link>
-              <Link
-                href="/dashboard"
-                className="px-8 py-4 glass rounded-xl font-bold text-lg hover:bg-white/20 transition-all"
-              >
-                📊 My Dashboard
-              </Link>
-            </div>
-          )}
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-gray-900">
+            Real Estate Intelligence <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-dark to-gold">
+              & Transparent Bidding
+            </span>
+          </h1>
 
-          {/* Feature Cards */}
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {/* Card 1 */}
-            <div className="glass-dark rounded-2xl p-8 card-hover group">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                ✅
+          <p className="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+            Stop guessing prices. See the true market value backed by predictive AI and participate in fair, transparent local auctions.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* CTA Handling based on session */}
+            {!session ? (
+              <>
+                <Link href="/listings" className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:-translate-y-1">
+                  Browse Properties
+                </Link>
+                <Link href="/signup" className="px-8 py-4 bg-white text-gold-dark border border-gold/30 rounded-xl font-bold text-lg hover:bg-gold/5 transition-all flex items-center gap-2 hover:-translate-y-1">
+                  Get Started <ArrowRight size={18} />
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/listings" className="px-8 py-4 bg-gold text-white rounded-xl font-bold text-lg hover:bg-gold-dark transition-all shadow-xl shadow-gold/20 hover:-translate-y-1">
+                  Browse Properties
+                </Link>
+                <Link href="/dashboard" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all hover:-translate-y-1">
+                  My Dashboard
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Grid */}
+      <section className="py-24 bg-gray-50/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-16 text-gray-900">Why top brokers use BidMetric</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-gold/20 transition-all group">
+              <div className="w-14 h-14 bg-gold/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <ShieldCheck size={28} className="text-gold-dark" />
               </div>
-              <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                Fair Valuation
-              </h3>
-              <p className="text-gray-300 mb-4">
-                See the true market value backed by 5-year predictive AI and historical data.
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Fair Valuation</h3>
+              <p className="text-gray-500 leading-relaxed">
+                BidMetric AI analyzes 50+ factors including HPI, infrastructure, and builder reputation to give you a fair price.
               </p>
             </div>
 
-            {/* Card 2 */}
-            <div className="glass-dark rounded-2xl p-8 card-hover group">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                🔨
+            {/* Feature 2 */}
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group">
+              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Zap size={28} className="text-blue-600" />
               </div>
-              <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Real-Time Bidding
-              </h3>
-              <p className="text-gray-300 mb-4">
-                Participate in transparent auctions. No hidden offers. See active bids live.
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Real-Time Bidding</h3>
+              <p className="text-gray-500 leading-relaxed">
+                Participate in transparent auctions. See active bids live and place your offer with confidence using our smart slider.
               </p>
             </div>
 
-            {/* Card 3 */}
-            <div className="glass-dark rounded-2xl p-8 card-hover group">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                🏙️
+            {/* Feature 3 */}
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-green-200 transition-all group">
+              <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Building size={28} className="text-green-600" />
               </div>
-              <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-                City Intelligence
-              </h3>
-              <p className="text-gray-300 mb-4">
-                Understand price drivers: Metro lines, infrastructure projects, and zoning plans.
+              <h3 className="text-xl font-bold mb-3 text-gray-900">City Intelligence</h3>
+              <p className="text-gray-500 leading-relaxed">
+                Understand price drivers: Metro lines, upcoming infrastructure projects, and zoning plans for every locality.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Info Section */}
-      {!session && (
-        <section className="py-16 px-4">
-          <div className="container mx-auto max-w-4xl">
-            <div className="glass-dark rounded-3xl p-12 text-center">
-              <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Ready to Bid Smart?
-              </h2>
-              <p className="text-xl text-gray-300 mb-8">
-                Join BidMetric today. Stop guessing prices. Start bidding with data.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/signup"
-                  className="px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105"
-                >
-                  Create Free Account
-                </Link>
-                <Link
-                  href="/login"
-                  className="px-8 py-4 glass rounded-xl font-bold text-lg hover:bg-white/20 transition-all"
-                >
-                  Already have an account?
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-white/10">
-        <div className="container mx-auto text-center text-gray-400">
-          <p>&copy; 2026 BidMetric. Powered by Supabase & RevenueCat.</p>
+      <footer className="py-12 border-t border-gray-100 bg-white">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <p className="text-gray-400 font-medium">© 2026 BidMetric. <span className="text-gray-300">|</span> Smart Real Estate.</p>
         </div>
       </footer>
     </div>
