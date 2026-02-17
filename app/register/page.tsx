@@ -136,13 +136,20 @@ function RegisterContent() {
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            const { error } = await supabase.auth.signInWithOAuth({
+            const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
                     redirectTo: `${window.location.origin}/auth/callback`,
+                    skipBrowserRedirect: true,
                 }
             });
+
             if (error) throw error;
+
+            // Manually redirect to ensure cookies are set
+            if (data?.url) {
+                window.location.href = data.url;
+            }
         } catch (error: any) {
             toast.error(error.message || 'Failed to start Google login');
             setLoading(false);

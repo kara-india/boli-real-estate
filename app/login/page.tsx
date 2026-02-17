@@ -38,11 +38,19 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         setIsLoading(true)
         try {
-            const { error } = await supabase.auth.signInWithOAuth({
+            const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
-                options: { redirectTo: `${window.location.origin}/auth/callback` }
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                    skipBrowserRedirect: true,
+                }
             })
             if (error) throw error
+
+            // Manually redirect to ensure cookies are set
+            if (data?.url) {
+                window.location.href = data.url
+            }
         } catch (error) {
             toast.error('Error logging in with Google')
             setIsLoading(false)
