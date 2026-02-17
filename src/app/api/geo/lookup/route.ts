@@ -30,6 +30,20 @@ const PINCODE_MAP: Record<string, any> = {
         areas: ['Goregaon East', 'Aarey Colony', 'Oberoi Garden City'],
         lat: 19.1634,
         lng: 72.8524
+    },
+    '401101': {
+        cities: ['Mira Bhayandar'],
+        district: ['Thane'],
+        areas: ['Bhayandar West', 'Maxus Mall Road', 'Golden Nest'],
+        lat: 19.2975,
+        lng: 72.8465
+    },
+    '400053': {
+        cities: ['Mumbai'],
+        district: ['Mumbai Suburban'],
+        areas: ['Andheri West', 'Lokhandwala', 'Versova'],
+        lat: 19.1363,
+        lng: 72.8276
     }
 };
 
@@ -41,8 +55,8 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Invalid pincode format' }, { status: 400 });
     }
 
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // Reduced network delay for snappier feel
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     const mapping = PINCODE_MAP[pincode];
 

@@ -88,37 +88,55 @@ export default function CreateListingPage() {
     const progressPercent = Math.round((completedRequired / requiredFields.length) * 100);
 
     // Geo Lookup Logic
-    useEffect(() => {
-        if (formData.pincode.length === 6 && /^[1-9][0-9]{5}$/.test(formData.pincode)) {
-            handleGeoLookup(formData.pincode);
-        } else {
-            setGeoData(null);
-        }
-    }, [formData.pincode]);
-
-    const handleGeoLookup = async (pin: string) => {
+    const handleGeoLookup = useCallback(async (pin: string) => {
         setIsGeoLoading(true);
         try {
             const res = await fetch(`/api/geo/lookup?pincode=${pin}`);
-            const data = await res.json();
-            if (!data.notFound) {
-                setGeoData(data);
-                setFormData(prev => ({
-                    ...prev,
-                    city: data.cities[0] || '',
-                    district: data.district[0] || '',
-                }));
-                setIsManualLocation(false);
-            } else {
-                setGeoData(null);
-                toast.error('Pincode not found in mapping.');
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Lookup failed');
             }
-        } catch (err) {
-            console.error(err);
+
+            const data = await res.json();
+
+            if (data.notFound) {
+                setGeoData(null);
+                toast.error('Pincode not found. Please enter details manually.');
+                return;
+            }
+
+            setGeoData(data);
+            setFormData(prev => ({
+                ...prev,
+                city: data.cities?.[0] || '',
+                district: data.district?.[0] || '',
+                area: data.areas?.length === 1 ? data.areas[0] : prev.area // Auto-select if only one area
+            }));
+            setIsManualLocation(false);
+            toast.success('Location unlocked!');
+        } catch (err: any) {
+            console.error('Geo lookup error:', err);
+            setGeoData(null);
+            // Don't toast on format errors, only on actual failures
+            if (!err.message?.includes('format')) {
+                toast.error(err.message || 'Failed to fetch location details.');
+            }
         } finally {
             setIsGeoLoading(false);
         }
-    };
+    }, [toast]);
+
+    useEffect(() => {
+        const pin = formData.pincode.trim();
+        if (pin.length === 6 && /^[1-9][0-9]{5}$/.test(pin)) {
+            handleGeoLookup(pin);
+        } else {
+            // Reset geo data if pincode becomes invalid/short
+            if (pin.length > 0 && pin.length < 6) {
+                setGeoData(null);
+            }
+        }
+    }, [formData.pincode, handleGeoLookup]);
 
     // Autosave Logic
     const saveDraft = useCallback(async (data: ListingFormData) => {
