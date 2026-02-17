@@ -25,6 +25,12 @@ export async function createClient() {
                     }
                 },
             },
+            cookieOptions: {
+                name: 'boli-auth-token',
+                secure: false,
+                sameSite: 'lax',
+                path: '/',
+            }
         }
     )
 }

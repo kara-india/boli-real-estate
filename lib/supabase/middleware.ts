@@ -25,6 +25,12 @@ export async function updateSession(request: NextRequest) {
                     )
                 },
             },
+            cookieOptions: {
+                name: 'boli-auth-token',
+                secure: false,
+                sameSite: 'lax',
+                path: '/',
+            }
         }
     )
 
