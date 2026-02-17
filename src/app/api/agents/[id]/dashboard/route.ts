@@ -133,10 +133,10 @@ export async function GET(
                 status: l.status,
                 created_at: l.created_at
             })),
-            recent_requests: (requests || []).slice(0, 10).map(r => ({
+            recent_requests: (requests || []).slice(0, 10).map((r: any) => ({
                 id: r.id,
-                listing_title: r.agent_listings?.title,
-                listing_location: r.agent_listings?.location,
+                listing_title: Array.isArray(r.agent_listings) ? r.agent_listings[0]?.title : r.agent_listings?.title,
+                listing_location: Array.isArray(r.agent_listings) ? r.agent_listings[0]?.location : r.agent_listings?.location,
                 buyer_name: r.buyer_name,
                 buyer_phone: r.buyer_phone,
                 buyer_email: r.buyer_email,
@@ -146,9 +146,9 @@ export async function GET(
                 status: r.status,
                 created_at: r.created_at
             })),
-            active_boosts: (activeBoosts || []).map(b => ({
+            active_boosts: (activeBoosts || []).map((b: any) => ({
                 id: b.id,
-                listing_title: b.agent_listings?.title,
+                listing_title: Array.isArray(b.agent_listings) ? b.agent_listings[0]?.title : b.agent_listings?.title,
                 end_at: b.end_at,
                 price_paid: b.price_paid
             })),
