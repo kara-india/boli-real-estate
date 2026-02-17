@@ -7,8 +7,18 @@ export default async function Home() {
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
 
+  // Fallback: If Supabase redirects here instead of /auth/callback
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-gold/20">
+    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-gold/20 relative">
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          const url = new URL(window.location.href);
+          const code = url.searchParams.get('code');
+          if (code) {
+            window.location.href = '/auth/callback' + window.location.search;
+          }
+        `
+      }} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
