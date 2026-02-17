@@ -6,7 +6,7 @@ import {
     User, ShieldCheck, Briefcase, ChevronRight, ArrowLeft,
     MapPin, Phone, Mail, Lock, Building2, FileText,
     CheckCircle2, Upload, Info, Loader2, Rocket,
-    Key, MailWarning, Globe, Sparkles
+    Key, MailWarning, Globe, Sparkles, Check, Send
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { createClient } from '@/lib/supabase/client';
@@ -26,6 +26,8 @@ function RegisterContent() {
     const [authMethod, setAuthMethod] = useState<AuthMethod>('none');
     const [loading, setLoading] = useState(false);
     const [verifyPhoneNow, setVerifyPhoneNow] = useState(true);
+    const [isOtpSent, setIsOtpSent] = useState(false);
+    const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -59,34 +61,72 @@ function RegisterContent() {
                     email: session.user.email || '',
                     fullName: session.user.user_metadata.full_name || prev.fullName
                 }));
-                setStep('details');
+                // For buyers, we still need phone if they didn't do it yet
+                // But usually social auth is the first thing. 
+                // Given the new rule: Phone first for buyers.
+                setStep('identity');
             }
         };
         checkSession();
     }, [supabase, step]);
 
+    // OTP Logic
+    const handleSendOtp = async () => {
+        if (!formData.phone || formData.phone.length < 10) {
+            toast.error('Valid 10-digit phone number required');
+            return;
+        }
+        setLoading(true);
+        // Using +91 as default based on Mira Road context
+        const { error } = await supabase.auth.signInWithOtp({
+            phone: `+91${formData.phone}`,
+        });
+        if (error) {
+            toast.error(error.message);
+        } else {
+            setIsOtpSent(true);
+            toast.success('OTP sent successfully');
+        }
+        setLoading(false);
+    };
+
+    const handleVerifyOtp = async () => {
+        if (!formData.otp || formData.otp.length < 4) {
+            toast.error('Valid OTP required');
+            return;
+        }
+        setLoading(true);
+        const { error } = await supabase.auth.verifyOtp({
+            phone: `+91${formData.phone}`,
+            token: formData.otp,
+            type: 'sms'
+        });
+        if (error) {
+            toast.error(error.message);
+        } else {
+            setIsPhoneVerified(true);
+            toast.success('Phone verified successfully');
+        }
+        setLoading(false);
+    };
+
     // Navigation Logic
     const nextStep = () => {
         if (step === 'role') setStep('identity');
         else if (step === 'identity') {
-            // Validation per role
             if (role === 'buyer') {
-                if (!formData.phone || formData.phone.length < 10) {
-                    toast.error('Mobile number is mandatory for Buyers');
+                if (!isPhoneVerified) {
+                    toast.error('Phone verification is mandatory for Buyers');
                     return;
                 }
-                setStep('verification');
+                setStep('details');
             } else {
                 // Seller/CP
                 if (authMethod === 'none') {
-                    toast.error('Please choose a mandatory identity method (Google or Email)');
+                    toast.error('Mandatory: Please use Google or Email to continue');
                     return;
                 }
-                if (authMethod === 'email' && !formData.email) {
-                    toast.error('Email is required');
-                    return;
-                }
-                if (formData.phone && verifyPhoneNow) {
+                if (formData.phone && verifyPhoneNow && !isPhoneVerified) {
                     setStep('verification');
                 } else {
                     setStep('details');
@@ -100,16 +140,25 @@ function RegisterContent() {
         if (step === 'identity') setStep('role');
         else if (step === 'verification') setStep('identity');
         else if (step === 'details') {
-            if (role === 'buyer') setStep('verification');
-            else setStep('identity');
+            setStep('identity');
         }
     };
 
     const handleGoogleLogin = async () => {
+        if (role === 'buyer' && !isPhoneVerified) {
+            toast.error('Verify phone number first');
+            return;
+        }
         setLoading(true);
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: `${window.location.origin}/auth/callback?next=/register` }
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback?next=/register`,
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                }
+            }
         });
         if (error) {
             toast.error(error.message);
@@ -155,6 +204,7 @@ function RegisterContent() {
                                 {['role', 'identity', 'verification', 'details'].map((s, idx) => {
                                     const steps = ['role', 'identity', 'verification', 'details'];
                                     const currentIdx = steps.indexOf(step);
+                                    if (role === 'buyer' && s === 'verification') return null; // Skip separate verification step for buyer
                                     return (
                                         <div
                                             key={s}
@@ -216,7 +266,7 @@ function RegisterContent() {
                             </div>
                         )}
 
-                        {/* STEP 2: IDENTITY SETUP (GOOGLE/EMAIL/PHONE) */}
+                        {/* STEP 2: IDENTITY SETUP */}
                         {step === 'identity' && (
                             <div className="animate-in fade-in slide-in-from-right-8 duration-700">
                                 <button onClick={prevStep} className="group text-gray-500 hover:text-gold flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] mb-10 transition-all">
@@ -230,25 +280,10 @@ function RegisterContent() {
                                         : "Google or Email authentication is mandatory for professional accounts."}
                                 </p>
 
-                                <div className="space-y-4">
-                                    {/* Google OAuth Option */}
-                                    <button
-                                        onClick={handleGoogleLogin}
-                                        className={`w-full flex items-center justify-center gap-4 py-5 rounded-[1.5rem] border-2 transition-all font-black text-xs uppercase tracking-widest ${authMethod === 'google' ? 'bg-gold/10 border-gold text-white' : 'bg-white/5 border-white/5 hover:bg-white/10 text-gray-300'
-                                            }`}
-                                    >
-                                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="w-5 h-5" alt="G" />
-                                        Continue with Google
-                                    </button>
-
-                                    <div className="relative py-4">
-                                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
-                                        <span className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-600 bg-[#0A0A0B]/80 px-4">Traditional Access</span>
-                                    </div>
-
-                                    {/* Manual Inputs */}
+                                <div className="space-y-6">
+                                    {/* Traditional Inputs Section */}
                                     <div className="space-y-5">
-                                        {/* Name & Pincode (Mandatory for Everyone) */}
+                                        {/* Name & Pincode */}
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="relative group">
                                                 <User className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
@@ -272,31 +307,96 @@ function RegisterContent() {
                                             </div>
                                         </div>
 
-                                        {/* Email (Optional for Buyer, Mandatory for Seller/CP if not Google) */}
-                                        <div className={`relative group transition-all ${role === 'buyer' && authMethod !== 'email' ? 'opacity-50' : ''}`}>
-                                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
-                                            <input
-                                                type="email"
-                                                placeholder={role === 'buyer' ? "Email (Optional)" : "Email (Mandatory)*"}
-                                                value={formData.email}
-                                                onChange={(e) => {
-                                                    setFormData({ ...formData, email: e.target.value });
-                                                    if (e.target.value) setAuthMethod('email');
-                                                }}
-                                                className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
-                                            />
+                                        {/* Mobile Section (Mandatory for Buyer) */}
+                                        <div className="space-y-4">
+                                            <div className="flex gap-3">
+                                                <div className="relative group flex-1">
+                                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
+                                                    <input
+                                                        type="tel"
+                                                        disabled={isPhoneVerified}
+                                                        placeholder={role === 'buyer' ? "Mobile Number (Mandatory)*" : "Mobile Number (Optional)"}
+                                                        value={formData.phone}
+                                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                        className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600 disabled:opacity-50"
+                                                    />
+                                                </div>
+                                                {role === 'buyer' && !isPhoneVerified && !isOtpSent && (
+                                                    <button
+                                                        onClick={handleSendOtp}
+                                                        className="px-6 bg-gold/10 border border-gold/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gold hover:bg-gold hover:text-white transition-all whitespace-nowrap"
+                                                    >
+                                                        Send OTP
+                                                    </button>
+                                                )}
+                                                {isPhoneVerified && (
+                                                    <div className="px-6 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-green-500">
+                                                        <Check size={14} /> Verified
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* OTP Input for Buyer */}
+                                            {role === 'buyer' && isOtpSent && !isPhoneVerified && (
+                                                <div className="flex gap-3 animate-in fade-in slide-in-from-top-2">
+                                                    <div className="relative group flex-1">
+                                                        <Key className="absolute left-5 top-1/2 -translate-y-1/2 text-gold transition-colors" size={18} />
+                                                        <input
+                                                            type="text"
+                                                            maxLength={6}
+                                                            placeholder="Enter 6-digit OTP"
+                                                            value={formData.otp}
+                                                            onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
+                                                            className="w-full bg-gold/5 border border-gold/20 rounded-2xl py-4 pl-14 pr-6 text-sm font-black focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        onClick={handleVerifyOtp}
+                                                        className="px-8 bg-gold text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gold-dark transition-all"
+                                                    >
+                                                        Verify
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
 
-                                        {/* Phone (Mandatory for Buyer, Optional for Seller/CP) */}
-                                        <div className="relative group">
-                                            <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
-                                            <input
-                                                type="tel"
-                                                placeholder={role === 'buyer' ? "Mobile Number (Mandatory)*" : "Mobile Number (Optional)"}
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
-                                            />
+                                        <div className="relative py-2">
+                                            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
+                                            <span className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-600 bg-[#0A0A0B]/80 px-4 italic">Optional Identity Linking</span>
+                                        </div>
+
+                                        {/* Email & Google Section */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Email Input */}
+                                            <div className={`relative group transition-all ${(role === 'buyer' && authMethod !== 'email') ? 'opacity-80' : ''}`}>
+                                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
+                                                <input
+                                                    type="email"
+                                                    placeholder={role === 'buyer' ? "Email (Optional)" : "Email (Mandatory)*"}
+                                                    value={formData.email}
+                                                    onChange={(e) => {
+                                                        setFormData({ ...formData, email: e.target.value });
+                                                        if (e.target.value) setAuthMethod('email');
+                                                    }}
+                                                    className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
+                                                />
+                                            </div>
+
+                                            {/* Google Button (RHS of Email) */}
+                                            <button
+                                                onClick={handleGoogleLogin}
+                                                disabled={role === 'buyer' && !isPhoneVerified}
+                                                className={`flex items-center justify-center gap-3 py-4 rounded-2xl border-2 transition-all font-black text-[10px] uppercase tracking-widest relative overflow-hidden group/g ${authMethod === 'google'
+                                                        ? 'bg-gold/10 border-gold text-white'
+                                                        : (role === 'buyer' && !isPhoneVerified)
+                                                            ? 'bg-white/5 border-white/5 text-gray-600 cursor-not-allowed grayscale'
+                                                            : 'bg-white/5 border-white/5 hover:bg-white/10 text-gray-300'
+                                                    }`}
+                                            >
+                                                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="w-4 h-4" alt="G" />
+                                                Continue with Google
+                                                {role === 'buyer' && !isPhoneVerified && <Lock size={12} className="opacity-50" />}
+                                            </button>
                                         </div>
 
                                         {/* Phone Verification Toggle for Professional Roles */}
@@ -310,29 +410,27 @@ function RegisterContent() {
                                                     className="w-5 h-5 rounded border-white/20 text-gold bg-transparent focus:ring-gold"
                                                 />
                                                 <label htmlFor="verifyPhoneNow" className="text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer">
-                                                    Verify mobile number now via OTP
+                                                    Verify mobile number now via OTP (Optional)
                                                 </label>
                                             </div>
-                                        )}
-
-                                        {role !== 'buyer' && !verifyPhoneNow && formData.phone && (
-                                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1">
-                                                <Info size={10} className="text-gold" /> You can verify later from your dashboard profile.
-                                            </p>
                                         )}
                                     </div>
                                 </div>
 
                                 <button
                                     onClick={nextStep}
-                                    className="w-full bg-gold text-white font-black uppercase tracking-[0.3em] text-[10px] py-6 rounded-3xl mt-10 hover:bg-gold-dark transition-all shadow-2xl flex items-center justify-center gap-4 active:scale-[0.98]"
+                                    disabled={role === 'buyer' && !isPhoneVerified}
+                                    className={`w-full font-black uppercase tracking-[0.3em] text-[10px] py-6 rounded-3xl mt-10 transition-all shadow-2xl flex items-center justify-center gap-4 active:scale-[0.98] ${(role === 'buyer' && !isPhoneVerified)
+                                            ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                                            : 'bg-gold text-white hover:bg-gold-dark'
+                                        }`}
                                 >
                                     Proceed to Confirm <ChevronRight size={16} />
                                 </button>
                             </div>
                         )}
 
-                        {/* STEP 3: VERIFICATION (PHONE OTP) */}
+                        {/* STEP 3: VERIFICATION (FOR PROFESSIONAL ROLES) */}
                         {step === 'verification' && (
                             <div className="animate-in fade-in zoom-in duration-700 text-center">
                                 <div className="w-24 h-24 bg-gold/10 rounded-full flex items-center justify-center text-gold mx-auto mb-10 shadow-[0_0_50px_rgba(212,175,55,0.15)] relative">
@@ -344,22 +442,22 @@ function RegisterContent() {
 
                                 <input
                                     type="text"
-                                    maxLength={4}
-                                    placeholder="• • • •"
+                                    maxLength={6}
+                                    placeholder="• • • • • •"
                                     className="w-full bg-white/5 border-2 border-white/5 rounded-3xl py-8 text-center text-5xl font-black tracking-[0.5em] focus:border-gold/50 focus:ring-0 transition-all mb-10 text-white selection:bg-transparent"
                                     value={formData.otp}
                                     onChange={(e) => {
                                         const val = e.target.value.replace(/\D/g, '');
                                         setFormData({ ...formData, otp: val });
-                                        if (val.length === 4) setStep('details');
+                                        if (val.length === 6) {
+                                            handleVerifyOtp().then(() => setStep('details'));
+                                        }
                                     }}
                                 />
 
                                 <div className="flex flex-col gap-3">
-                                    <button className="text-gold text-[10px] font-black uppercase tracking-[0.2em] hover:text-white transition-colors">Resend Code</button>
-                                    {role !== 'buyer' && (
-                                        <button onClick={() => setStep('details')} className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] hover:text-white transition-colors">Skip for Now</button>
-                                    )}
+                                    <button onClick={handleSendOtp} className="text-gold text-[10px] font-black uppercase tracking-[0.2em] hover:text-white transition-colors">Resend Code</button>
+                                    <button onClick={() => setStep('details')} className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] hover:text-white transition-colors">Skip for Now</button>
                                 </div>
                             </div>
                         )}
@@ -369,8 +467,12 @@ function RegisterContent() {
                             <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
-                                        <h1 className="text-3xl font-black italic tracking-tighter">Golden Page Setup.</h1>
-                                        <p className="text-gray-400 font-medium tracking-tight">One final push to establish your digital presence.</p>
+                                        <h1 className="text-3xl font-black italic tracking-tighter">
+                                            {role === 'buyer' ? 'Final Preferences.' : 'Golden Page Setup.'}
+                                        </h1>
+                                        <p className="text-gray-400 font-medium tracking-tight">
+                                            {role === 'buyer' ? 'Almost ready to start bidding.' : 'Establishing your professional digital presence.'}
+                                        </p>
                                     </div>
                                     <div className="bg-gold/10 p-4 rounded-3xl border border-gold/20 flex flex-col items-center">
                                         <Globe className="text-gold mb-1" size={20} />
@@ -384,10 +486,15 @@ function RegisterContent() {
                                             <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10 text-center">
                                                 <CheckCircle2 size={48} className="text-gold mx-auto mb-6" />
                                                 <h3 className="text-xl font-black mb-2">Verified Identity</h3>
-                                                <p className="text-sm text-gray-500 font-medium">Your buyer profile is now active. You can start requesting site visits and bidding on properties immediately.</p>
+                                                <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                                                    Your mobile <span className="text-white">+91 {formData.phone}</span> is now linked.
+                                                    {authMethod === 'google' ? ' Google profile linked successfully.' : ' You can optionally link Google for easier login later.'}
+                                                </p>
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-4">Saved Localities</label>
+                                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+                                                    <MapPin size={12} className="text-gold" /> Favorite Localities (Optional)
+                                                </label>
                                                 <div className="flex flex-wrap gap-2">
                                                     {['Mira Road East', 'Bhayandar West', 'Kanakia', 'Beverly Park', 'Shanti Park', 'Delta Gardens'].map(l => (
                                                         <button
@@ -492,8 +599,8 @@ function RegisterContent() {
                                         disabled={loading}
                                         className="w-full bg-gold text-white font-black uppercase tracking-[0.3em] text-[10px] py-6 rounded-3xl hover:bg-gold-dark transition-all shadow-2xl flex items-center justify-center gap-4 disabled:opacity-50 active:scale-[0.98]"
                                     >
-                                        {loading ? <Loader2 className="animate-spin" /> : <Sparkles size={18} fill="currentColor" />}
-                                        Go Live on BidMetric
+                                        {loading ? <Loader2 className="animate-spin" /> : <Rocket size={18} fill="currentColor" />}
+                                        Initialize My Account
                                     </button>
                                 </div>
                             </div>
@@ -505,11 +612,11 @@ function RegisterContent() {
                                 <div className="w-28 h-28 bg-gold/10 rounded-full flex items-center justify-center text-gold mx-auto mb-10 shadow-[0_0_80px_rgba(212,175,55,0.2)]">
                                     <Rocket size={56} className="animate-bounce" />
                                 </div>
-                                <h1 className="text-5xl font-black mb-4 italic tracking-tighter uppercase tracking-[0.1em]">You are Live.</h1>
+                                <h1 className="text-5xl font-black mb-4 italic tracking-tighter uppercase tracking-[0.1em]">Authenticated.</h1>
                                 <p className="text-gray-400 mb-12 font-medium max-w-sm mx-auto leading-relaxed">
                                     {role === 'buyer'
-                                        ? "Your account is verified. Start exploring Mira Road's best deals with AI analytics."
-                                        : "Your Golden Page is now public. You can start listing properties and capturing high-intent leads immediately."}
+                                        ? "Welcome to BidMetric. Your secure buyer profile is active and ready for Mira Road property deals."
+                                        : "Your professional Golden Page is now public. You can start capturing quality leads and managing listings immediately."}
                                 </p>
 
                                 <div className="flex flex-col gap-4">
@@ -529,9 +636,9 @@ function RegisterContent() {
 
                     {/* Footer Branding */}
                     {step !== 'success' && (
-                        <div className="mt-12 flex items-center justify-between opacity-30 hover:opacity-100 transition-opacity">
+                        <div className="mt-12 flex items-center justify-between opacity-30 animated-in duration-1000 slide-in-from-bottom-2">
                             <div className="flex items-center gap-3">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secured by BidMetric</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secured by BidMetric AI</span>
                                 <div className="h-4 w-px bg-white/10" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">{role.replace('_', ' ')} path</span>
                             </div>
