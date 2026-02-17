@@ -1,31 +1,41 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     User, ShieldCheck, Briefcase, ChevronRight, ArrowLeft,
     MapPin, Phone, Mail, Lock, Building2, FileText,
-    CheckCircle2, Upload, Info, Loader2, Rocket
+    CheckCircle2, Upload, Info, Loader2, Rocket,
+    Key, MailWarning, Globe, Sparkles
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { createClient } from '@/lib/supabase/client';
 
 type Role = 'buyer' | 'rera_seller' | 'channel_partner';
+type Step = 'role' | 'identity' | 'verification' | 'details' | 'success';
+type AuthMethod = 'google' | 'email' | 'none';
 
 export default function RegisterPage() {
     const router = useRouter();
-    const [step, setStep] = useState<'role' | 'basic' | 'otp' | 'details' | 'success'>('role');
-    const [loading, setLoading] = useState(false);
+    const searchParams = useSearchParams();
+    const supabase = createClient();
+
+    // Core State
+    const [step, setStep] = useState<Step>('role');
     const [role, setRole] = useState<Role>('buyer');
+    const [authMethod, setAuthMethod] = useState<AuthMethod>('none');
+    const [loading, setLoading] = useState(false);
+    const [verifyPhoneNow, setVerifyPhoneNow] = useState(true);
 
     // Form State
     const [formData, setFormData] = useState({
         fullName: '',
         phone: '',
         email: '',
-        password: '',
+        password: '', // For email auth
         pincode: '',
         otp: '',
-        // Role specific
+        // Role specific (For Golden Page)
         businessName: '',
         reraNumber: '',
         officeAddress: '',
@@ -33,37 +43,95 @@ export default function RegisterPage() {
         territory: [] as string[],
         localities: [] as string[],
         commission: '',
+        agencyLogo: null as string | null,
+        bio: '',
     });
 
-    const handleNext = () => {
-        if (step === 'role') setStep('basic');
-        else if (step === 'basic') {
-            if (!formData.fullName || !formData.phone || !formData.pincode) {
-                toast.error('Please fill all required fields');
-                return;
+    // Handle OAuth Callback Redirects
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session && step === 'role') {
+                // If user came back from Google, move them to details
+                setAuthMethod('google');
+                setFormData(prev => ({
+                    ...prev,
+                    email: session.user.email || '',
+                    fullName: session.user.user_metadata.full_name || prev.fullName
+                }));
+                setStep('details');
             }
-            setStep('otp');
+        };
+        checkSession();
+    }, [supabase, step]);
+
+    // Navigation Logic
+    const nextStep = () => {
+        if (step === 'role') setStep('identity');
+        else if (step === 'identity') {
+            // Validation per role
+            if (role === 'buyer') {
+                if (!formData.phone || formData.phone.length < 10) {
+                    toast.error('Mobile number is mandatory for Buyers');
+                    return;
+                }
+                setStep('verification');
+            } else {
+                // Seller/CP
+                if (authMethod === 'none') {
+                    toast.error('Please choose a mandatory identity method (Google or Email)');
+                    return;
+                }
+                if (authMethod === 'email' && !formData.email) {
+                    toast.error('Email is required');
+                    return;
+                }
+                if (formData.phone && verifyPhoneNow) {
+                    setStep('verification');
+                } else {
+                    setStep('details');
+                }
+            }
         }
-        else if (step === 'otp') setStep('details');
+        else if (step === 'verification') setStep('details');
+    };
+
+    const prevStep = () => {
+        if (step === 'identity') setStep('role');
+        else if (step === 'verification') setStep('identity');
+        else if (step === 'details') {
+            if (role === 'buyer') setStep('verification');
+            else setStep('identity');
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        setLoading(true);
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: `${window.location.origin}/auth/callback?next=/register` }
+        });
+        if (error) {
+            toast.error(error.message);
+            setLoading(false);
+        }
     };
 
     const handleFinalSubmit = async () => {
         setLoading(true);
         try {
-            // Simulate API call
             const res = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, role }),
+                body: JSON.stringify({ ...formData, role, authMethod }),
             });
 
             if (!res.ok) throw new Error('Registration failed');
 
-            const data = await res.json();
             setStep('success');
-            toast.success('Registration Complete!');
+            toast.success('Onboarding Successful!');
         } catch (err) {
-            toast.error('Failed to register. Please try again.');
+            toast.error('Failed to complete setup. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -71,196 +139,257 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen bg-[#0A0A0B] text-white flex flex-col font-sans selection:bg-gold/30">
-            {/* Background Decor */}
+            {/* Ambient Background */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-gold/10 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-gold/5 rounded-full blur-[120px]" />
+                <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-gold/10 rounded-full blur-[140px]" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-gold/5 rounded-full blur-[120px]" />
             </div>
 
-            <main className="flex-1 flex flex-col items-center justify-center p-4 relative z-10">
-                <div className="w-full max-w-xl">
+            <main className="flex-1 flex flex-col items-center justify-center p-4 relative z-10 w-full max-w-4xl mx-auto">
+                <div className="w-full max-w-2xl">
 
-                    {/* Progress Indicator */}
+                    {/* Header Progress */}
                     {step !== 'success' && (
-                        <div className="mb-12 flex justify-center gap-2">
-                            {['role', 'basic', 'otp', 'details'].map((s, idx) => (
-                                <div
-                                    key={s}
-                                    className={`h-1.5 rounded-full transition-all duration-500 ${['role', 'basic', 'otp', 'details'].indexOf(step) >= idx
-                                        ? 'w-12 bg-gold shadow-[0_0_15px_rgba(212,175,55,0.4)]'
-                                        : 'w-6 bg-white/10'
-                                        }`}
-                                />
-                            ))}
+                        <div className="mb-12 flex items-center justify-between px-2">
+                            <div className="flex gap-2">
+                                {['role', 'identity', 'verification', 'details'].map((s, idx) => {
+                                    const steps = ['role', 'identity', 'verification', 'details'];
+                                    const currentIdx = steps.indexOf(step);
+                                    return (
+                                        <div
+                                            key={s}
+                                            className={`h-1.5 rounded-full transition-all duration-700 ${currentIdx >= idx ? 'w-12 bg-gold shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'w-6 bg-white/10'
+                                                }`}
+                                        />
+                                    );
+                                })}
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gold-dark">{step}</span>
                         </div>
                     )}
 
-                    {/* Stepper Content */}
-                    <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden group">
+                    <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
 
-                        {/* 1. Role Selection */}
+                        {/* STEP 1: ROLE SELECTION */}
                         {step === 'role' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <h1 className="text-4xl font-black mb-2 tracking-tight">Register As</h1>
-                                <p className="text-gray-400 mb-8 font-medium">Select a role to get started.</p>
-
-                                <button
-                                    onClick={async () => {
-                                        const supabase = (await import('@/lib/supabase/client')).createClient();
-                                        await supabase.auth.signInWithOAuth({
-                                            provider: 'google',
-                                            options: { redirectTo: `${window.location.origin}/auth/callback?next=/register` }
-                                        });
-                                    }}
-                                    className="w-full flex items-center justify-center gap-3 px-5 py-4 border border-white/10 rounded-2xl bg-white/5 hover:bg-white/10 transition-all font-bold text-white text-sm mb-8 shadow-xl"
-                                >
-                                    <svg className="h-5 w-5" viewBox="0 0 24 24">
-                                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.21h-.19z" fill="#FBBC05" />
-                                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                                    </svg>
-                                    Quick Register with Google
-                                </button>
-
-                                <div className="relative mb-8">
-                                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
-                                    <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-black text-gray-500"><span className="px-4 bg-[#0A0A0B]">Or Manual Path</span></div>
+                            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+                                <div className="mb-10">
+                                    <h1 className="text-4xl font-black mb-3 tracking-tighter italic">Identify Yourself.</h1>
+                                    <p className="text-gray-400 font-medium tracking-tight">Select your professional standing to access the platform.</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4">
                                     {[
-                                        { id: 'buyer', title: 'Buyer', icon: User, desc: 'Browse properties & send visit requests.' },
-                                        { id: 'rera_seller', title: 'Authorized RERA Seller', icon: ShieldCheck, desc: 'List properties & get a verified Golden Page.' },
-                                        { id: 'channel_partner', title: 'Channel Partner', icon: Briefcase, desc: 'Partner with projects & manage leads.' }
+                                        { id: 'buyer', title: 'Home Buyer / Renter', icon: User, desc: 'Browse analytics, bid for properties and manage site visits.', badge: 'Free Forever' },
+                                        { id: 'rera_seller', title: 'Authorized RERA Seller', icon: ShieldCheck, desc: 'Professional agent with full Golden Page features and lead capture.', badge: 'RERA Req.' },
+                                        { id: 'channel_partner', title: 'Developer / CP', icon: Briefcase, desc: 'High-volume relationship manager with secondary market focus.', badge: 'Enterprise' }
                                     ].map((item) => (
                                         <button
                                             key={item.id}
                                             onClick={() => setRole(item.id as Role)}
-                                            className={`flex items-center gap-6 p-6 rounded-3xl border-2 transition-all group/btn text-left ${role === item.id
-                                                ? 'bg-gold/10 border-gold shadow-[0_0_30px_rgba(212,175,55,0.1)]'
-                                                : 'bg-white/5 border-white/5 hover:bg-white/10'
+                                            className={`flex items-center gap-6 p-6 rounded-[2rem] border-2 transition-all group/btn text-left relative ${role === item.id ? 'bg-gold/10 border-gold shadow-[0_0_40px_rgba(212,175,55,0.1)]' : 'bg-white/5 border-white/5 hover:bg-white/10'
                                                 }`}
                                         >
-                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${role === item.id ? 'bg-gold text-white' : 'bg-white/5 text-gray-400'
+                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${role === item.id ? 'bg-gold text-white rotate-6' : 'bg-white/5 text-gray-500 group-hover/btn:text-gray-300'
                                                 }`}>
                                                 <item.icon size={28} />
                                             </div>
                                             <div className="flex-1">
-                                                <h3 className="font-black text-lg">{item.title}</h3>
-                                                <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                                                <div className="flex items-center gap-3">
+                                                    <h3 className="font-black text-xl tracking-tight">{item.title}</h3>
+                                                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded tracking-widest ${role === item.id ? 'bg-gold text-white' : 'bg-white/10 text-gray-400'
+                                                        }`}>{item.badge}</span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 mt-1 leading-relaxed font-medium">{item.desc}</p>
                                             </div>
-                                            <ChevronRight className={`transition-transform ${role === item.id ? 'text-gold translate-x-1' : 'text-white/10'}`} />
+                                            <ChevronRight className={`transition-all duration-500 ${role === item.id ? 'text-gold translate-x-2' : 'text-white/5'}`} />
                                         </button>
                                     ))}
                                 </div>
 
                                 <button
-                                    onClick={handleNext}
-                                    className="w-full bg-gold text-white font-black uppercase tracking-[0.2em] text-xs py-5 rounded-2xl mt-10 hover:bg-gold-dark transition-all shadow-xl shadow-gold/20 flex items-center justify-center gap-3 active:scale-[0.98]"
+                                    onClick={nextStep}
+                                    className="w-full bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] py-6 rounded-3xl mt-12 hover:bg-gold hover:text-white transition-all shadow-2xl flex items-center justify-center gap-4 active:scale-[0.98]"
                                 >
-                                    Continue <ChevronRight size={16} />
+                                    Define Persona <ChevronRight size={16} />
                                 </button>
                             </div>
                         )}
 
-                        {/* 2. Basic Details */}
-                        {step === 'basic' && (
-                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                <button onClick={() => setStep('role')} className="text-gray-500 hover:text-white flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-8 transition-colors">
-                                    <ArrowLeft size={14} /> Back
+                        {/* STEP 2: IDENTITY SETUP (GOOGLE/EMAIL/PHONE) */}
+                        {step === 'identity' && (
+                            <div className="animate-in fade-in slide-in-from-right-8 duration-700">
+                                <button onClick={prevStep} className="group text-gray-500 hover:text-gold flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] mb-10 transition-all">
+                                    <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Step back
                                 </button>
-                                <h1 className="text-3xl font-black mb-8 tracking-tight">Tell us about yourself</h1>
 
-                                <div className="space-y-5">
-                                    <div className="relative group/input">
-                                        <User className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within/input:text-gold transition-colors" size={20} />
-                                        <input
-                                            type="text"
-                                            placeholder="Full Name"
-                                            className="w-full bg-white/5 border-none rounded-2xl py-5 pl-14 pr-6 focus:ring-2 focus:ring-gold/50 transition-all font-medium"
-                                            value={formData.fullName}
-                                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="relative group/input">
-                                        <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within/input:text-gold transition-colors" size={20} />
-                                        <input
-                                            type="tel"
-                                            placeholder="Primary Phone (OTP)"
-                                            className="w-full bg-white/5 border-none rounded-2xl py-5 pl-14 pr-6 focus:ring-2 focus:ring-gold/50 transition-all font-medium"
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="relative group/input">
-                                        <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within/input:text-gold transition-colors" size={20} />
-                                        <input
-                                            type="text"
-                                            placeholder="Pincode (e.g. 400050)"
-                                            className="w-full bg-white/5 border-none rounded-2xl py-5 pl-14 pr-6 focus:ring-2 focus:ring-gold/50 transition-all font-medium"
-                                            value={formData.pincode}
-                                            onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                                        />
-                                    </div>
-                                </div>
+                                <h1 className="text-3xl font-black mb-2 italic">How should we recognize you?</h1>
+                                <p className="text-gray-400 mb-10 font-medium">
+                                    {role === 'buyer'
+                                        ? "Phone is mandatory. Google or Email is optional but recommended."
+                                        : "Google or Email authentication is mandatory for professional accounts."}
+                                </p>
 
-                                <div className="mt-10 flex flex-col gap-4">
+                                <div className="space-y-4">
+                                    {/* Google OAuth Option */}
                                     <button
-                                        onClick={handleNext}
-                                        className="w-full bg-gold text-white font-black uppercase tracking-[0.2em] text-xs py-5 rounded-2xl hover:bg-gold-dark transition-all shadow-xl shadow-gold/20 flex items-center justify-center gap-3 active:scale-[0.98]"
+                                        onClick={handleGoogleLogin}
+                                        className={`w-full flex items-center justify-center gap-4 py-5 rounded-[1.5rem] border-2 transition-all font-black text-xs uppercase tracking-widest ${authMethod === 'google' ? 'bg-gold/10 border-gold text-white' : 'bg-white/5 border-white/5 hover:bg-white/10 text-gray-300'
+                                            }`}
                                     >
-                                        Verify via OTP <ChevronRight size={16} />
+                                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="w-5 h-5" alt="G" />
+                                        Continue with Google
                                     </button>
-                                    <p className="text-center text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                                        By continuing, you agree to our Terms & Privacy Policy.
-                                    </p>
+
+                                    <div className="relative py-4">
+                                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
+                                        <span className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-600 bg-[#0A0A0B]/80 px-4">Traditional Access</span>
+                                    </div>
+
+                                    {/* Manual Inputs */}
+                                    <div className="space-y-5">
+                                        {/* Name & Pincode (Mandatory for Everyone) */}
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="relative group">
+                                                <User className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Full Name"
+                                                    value={formData.fullName}
+                                                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                                                    className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
+                                                />
+                                            </div>
+                                            <div className="relative group">
+                                                <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Pincode"
+                                                    value={formData.pincode}
+                                                    onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                                                    className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Email (Optional for Buyer, Mandatory for Seller/CP if not Google) */}
+                                        <div className={`relative group transition-all ${role === 'buyer' && authMethod !== 'email' ? 'opacity-50' : ''}`}>
+                                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
+                                            <input
+                                                type="email"
+                                                placeholder={role === 'buyer' ? "Email (Optional)" : "Email (Mandatory)*"}
+                                                value={formData.email}
+                                                onChange={(e) => {
+                                                    setFormData({ ...formData, email: e.target.value });
+                                                    if (e.target.value) setAuthMethod('email');
+                                                }}
+                                                className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
+                                            />
+                                        </div>
+
+                                        {/* Phone (Mandatory for Buyer, Optional for Seller/CP) */}
+                                        <div className="relative group">
+                                            <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-gold transition-colors" size={18} />
+                                            <input
+                                                type="tel"
+                                                placeholder={role === 'buyer' ? "Mobile Number (Mandatory)*" : "Mobile Number (Optional)"}
+                                                value={formData.phone}
+                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
+                                            />
+                                        </div>
+
+                                        {/* Phone Verification Toggle for Professional Roles */}
+                                        {role !== 'buyer' && formData.phone && (
+                                            <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
+                                                <input
+                                                    type="checkbox"
+                                                    id="verifyPhoneNow"
+                                                    checked={verifyPhoneNow}
+                                                    onChange={(e) => setVerifyPhoneNow(e.target.checked)}
+                                                    className="w-5 h-5 rounded border-white/20 text-gold bg-transparent focus:ring-gold"
+                                                />
+                                                <label htmlFor="verifyPhoneNow" className="text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer">
+                                                    Verify mobile number now via OTP
+                                                </label>
+                                            </div>
+                                        )}
+
+                                        {role !== 'buyer' && !verifyPhoneNow && formData.phone && (
+                                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1">
+                                                <Info size={10} className="text-gold" /> You can verify later from your dashboard profile.
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
+
+                                <button
+                                    onClick={nextStep}
+                                    className="w-full bg-gold text-white font-black uppercase tracking-[0.3em] text-[10px] py-6 rounded-3xl mt-10 hover:bg-gold-dark transition-all shadow-2xl flex items-center justify-center gap-4 active:scale-[0.98]"
+                                >
+                                    Proceed to Confirm <ChevronRight size={16} />
+                                </button>
                             </div>
                         )}
 
-                        {/* 3. OTP Verification */}
-                        {step === 'otp' && (
-                            <div className="animate-in fade-in zoom-in duration-500 text-center">
-                                <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center text-gold mx-auto mb-8">
-                                    <CheckCircle2 size={40} className="animate-pulse" />
+                        {/* STEP 3: VERIFICATION (PHONE OTP) */}
+                        {step === 'verification' && (
+                            <div className="animate-in fade-in zoom-in duration-700 text-center">
+                                <div className="w-24 h-24 bg-gold/10 rounded-full flex items-center justify-center text-gold mx-auto mb-10 shadow-[0_0_50px_rgba(212,175,55,0.15)] relative">
+                                    <Key size={40} className="animate-pulse" />
+                                    <div className="absolute inset-0 rounded-full border border-gold/30 animate-ping opacity-20" />
                                 </div>
-                                <h1 className="text-3xl font-black mb-2 tracking-tight italic uppercase">Verify Phone</h1>
-                                <p className="text-gray-400 mb-10 font-medium">OTP sent to <span className="text-white">+91 {formData.phone}</span></p>
+                                <h1 className="text-4xl font-black mb-3 italic tracking-tight">Security Check.</h1>
+                                <p className="text-gray-400 mb-12 font-medium">Verify code sent to <span className="text-gold font-black">+91 {formData.phone}</span></p>
 
                                 <input
                                     type="text"
                                     maxLength={4}
                                     placeholder="• • • •"
-                                    className="w-full bg-white/5 border-2 border-white/5 rounded-2xl py-6 text-center text-4xl font-black tracking-[0.5em] focus:border-gold/50 focus:ring-0 transition-all mb-8"
+                                    className="w-full bg-white/5 border-2 border-white/5 rounded-3xl py-8 text-center text-5xl font-black tracking-[0.5em] focus:border-gold/50 focus:ring-0 transition-all mb-10 text-white selection:bg-transparent"
                                     value={formData.otp}
                                     onChange={(e) => {
                                         const val = e.target.value.replace(/\D/g, '');
                                         setFormData({ ...formData, otp: val });
-                                        if (val.length === 4) handleNext();
+                                        if (val.length === 4) setStep('details');
                                     }}
                                 />
 
-                                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">
-                                    Didn't receive code? <button className="text-gold hover:underline">Resend OTP</button>
-                                </p>
+                                <div className="flex flex-col gap-3">
+                                    <button className="text-gold text-[10px] font-black uppercase tracking-[0.2em] hover:text-white transition-colors">Resend Code</button>
+                                    {role !== 'buyer' && (
+                                        <button onClick={() => setStep('details')} className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] hover:text-white transition-colors">Skip for Now</button>
+                                    )}
+                                </div>
                             </div>
                         )}
 
-                        {/* 4. Role-Specific Details */}
+                        {/* STEP 4: PROFESSIONAL DETAILS (FOR GOLDEN PAGE) */}
                         {step === 'details' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <h1 className="text-3xl font-black mb-2 tracking-tight">Final Details</h1>
-                                <p className="text-gray-400 mb-8 font-medium">Help us personalize your Experience.</p>
+                            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div>
+                                        <h1 className="text-3xl font-black italic tracking-tighter">Golden Page Setup.</h1>
+                                        <p className="text-gray-400 font-medium tracking-tight">One final push to establish your digital presence.</p>
+                                    </div>
+                                    <div className="bg-gold/10 p-4 rounded-3xl border border-gold/20 flex flex-col items-center">
+                                        <Globe className="text-gold mb-1" size={20} />
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-gold text-center">Public <br /> Profile</span>
+                                    </div>
+                                </div>
 
-                                <div className="space-y-5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-
-                                    {role === 'buyer' && (
-                                        <div className="space-y-5">
+                                <div className="space-y-6 max-h-[450px] overflow-y-auto pr-4 custom-scrollbar">
+                                    {role === 'buyer' ? (
+                                        <div className="space-y-8 py-4">
+                                            <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10 text-center">
+                                                <CheckCircle2 size={48} className="text-gold mx-auto mb-6" />
+                                                <h3 className="text-xl font-black mb-2">Verified Identity</h3>
+                                                <p className="text-sm text-gray-500 font-medium">Your buyer profile is now active. You can start requesting site visits and bidding on properties immediately.</p>
+                                            </div>
                                             <div>
-                                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">Preferred Localities</label>
+                                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-4">Saved Localities</label>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {['Mira Road East', 'Bhayandar East', 'Kanakia', 'Beverly Park'].map(l => (
+                                                    {['Mira Road East', 'Bhayandar West', 'Kanakia', 'Beverly Park', 'Shanti Park', 'Delta Gardens'].map(l => (
                                                         <button
                                                             key={l}
                                                             onClick={() => {
@@ -270,7 +399,7 @@ export default function RegisterPage() {
                                                                     localities: exists ? formData.localities.filter(x => x !== l) : [...formData.localities, l]
                                                                 });
                                                             }}
-                                                            className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${formData.localities.includes(l) ? 'bg-gold border-gold text-white' : 'bg-white/5 border-white/5 text-gray-400'
+                                                            className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${formData.localities.includes(l) ? 'bg-gold border-gold text-white shadow-xl shadow-gold/20' : 'bg-white/5 border-white/5 text-gray-500 hover:text-gray-300'
                                                                 }`}
                                                         >
                                                             {l}
@@ -279,164 +408,154 @@ export default function RegisterPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    )}
+                                    ) : (
+                                        <div className="space-y-8 py-2">
+                                            {/* Business Identity */}
+                                            <div className="space-y-5">
+                                                <div className="relative group/input">
+                                                    <Building2 className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-600 transition-colors" size={20} />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Agency or Business Name*"
+                                                        value={formData.businessName}
+                                                        onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                                                        className="w-full bg-white/5 border-none rounded-3xl py-6 pl-16 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
+                                                    />
+                                                </div>
+                                                <div className="relative group/input">
+                                                    <ShieldCheck className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-600 transition-colors" size={20} />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="MAHARERA Registration Number*"
+                                                        value={formData.reraNumber}
+                                                        onChange={(e) => setFormData({ ...formData, reraNumber: e.target.value })}
+                                                        className="w-full bg-white/5 border-none rounded-3xl py-6 pl-16 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600"
+                                                    />
+                                                </div>
+                                                <div className="relative group/input">
+                                                    <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-600 transition-colors" size={20} />
+                                                    <textarea
+                                                        placeholder="Full Office Address (Street, City, Pincode)*"
+                                                        value={formData.officeAddress}
+                                                        onChange={(e) => setFormData({ ...formData, officeAddress: e.target.value })}
+                                                        className="w-full bg-white/5 border-none rounded-3xl py-6 pl-16 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600 h-32 resize-none"
+                                                    />
+                                                </div>
+                                                <div className="relative group/input">
+                                                    <FileText className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-600 transition-colors" size={20} />
+                                                    <textarea
+                                                        placeholder="Agent Bio / Agency Tagline (Example: Mira Road's most trusted luxury realtor for 10 years.)*"
+                                                        value={formData.bio}
+                                                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                                        className="w-full bg-white/5 border-none rounded-3xl py-6 pl-16 pr-6 text-sm font-bold focus:ring-1 focus:ring-gold/30 placeholder:text-gray-600 h-24 resize-none"
+                                                    />
+                                                </div>
+                                            </div>
 
-                                    {role === 'rera_seller' && (
-                                        <div className="space-y-6">
-                                            <div className="relative group/input">
-                                                <Building2 className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Agency / Business Name*"
-                                                    className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 focus:ring-2 focus:ring-gold/50 font-medium"
-                                                    value={formData.businessName}
-                                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="relative group/input">
-                                                <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                                                <input
-                                                    type="text"
-                                                    placeholder="RERA Number (e.g. A517...)*"
-                                                    className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 focus:ring-2 focus:ring-gold/50 font-medium"
-                                                    value={formData.reraNumber}
-                                                    onChange={(e) => setFormData({ ...formData, reraNumber: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="p-6 border-2 border-dashed border-white/10 rounded-3xl text-center group/upload hover:border-gold/50 cursor-pointer transition-all">
-                                                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-3 text-gray-400 group-hover/upload:bg-gold/10 group-hover/upload:text-gold transition-all">
-                                                    <Upload size={20} />
+                                            {/* Media Upload */}
+                                            <div className="p-10 border-2 border-dashed border-white/5 rounded-[2.5rem] text-center hover:border-gold/30 transition-all bg-white/[0.01] group/logo">
+                                                <div className="w-16 h-16 bg-white/5 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 text-gray-500 group-hover/logo:bg-gold/10 group-hover/logo:text-gold transition-all duration-500">
+                                                    <FileText size={24} />
                                                 </div>
-                                                <h4 className="text-sm font-black tracking-tight mb-1">Upload RERA Certificate</h4>
-                                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">PDF or JPG (Max 10MB). We'll verify and add a "RERA Verified" badge.</p>
+                                                <h4 className="text-lg font-black tracking-tight mb-2 italic">Upload Company Logo</h4>
+                                                <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] max-w-xs mx-auto">SVG, PNG or JPG (Min 200x200px). This will appear on all your listings.</p>
+                                                <button className="mt-8 text-gold text-[10px] font-black uppercase tracking-[0.3em] bg-gold/5 px-6 py-3 rounded-xl border border-gold/10 hover:bg-gold hover:text-white transition-all">Select File</button>
                                             </div>
-                                            <div className="flex items-start gap-4 p-5 bg-white/5 rounded-2xl">
-                                                <div className="mt-1">
-                                                    <input type="checkbox" className="w-5 h-5 rounded border-white/10 text-gold bg-transparent focus:ring-gold" id="authorize" />
+
+                                            {/* Partner Specifics */}
+                                            {role === 'channel_partner' && (
+                                                <div className="space-y-6 bg-white/5 p-8 rounded-[2rem] border border-white/5">
+                                                    <div>
+                                                        <label className="block text-[10px] font-black text-gold uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                                            <Briefcase size={12} /> Partner Classification
+                                                        </label>
+                                                        <select
+                                                            className="w-full bg-[#0A0A0B] border-none rounded-2xl py-4 px-6 text-sm font-black appearance-none focus:ring-1 focus:ring-gold/30"
+                                                            value={formData.partnerType}
+                                                            onChange={(e) => setFormData({ ...formData, partnerType: e.target.value })}
+                                                        >
+                                                            <option>Referral Partner</option>
+                                                            <option>Exclusive Mandate Partner</option>
+                                                            <option>Developer Direct Team</option>
+                                                            <option>Institutional Broker</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
-                                                <label htmlFor="authorize" className="text-[11px] text-gray-400 font-medium leading-relaxed uppercase tracking-tighter cursor-pointer">
-                                                    I authorize Boli to show my agency as “Authorized RERA Seller” and display my credentials.
-                                                </label>
-                                            </div>
+                                            )}
                                         </div>
                                     )}
-
-                                    {role === 'channel_partner' && (
-                                        <div className="space-y-6">
-                                            <div>
-                                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">Partner Type</label>
-                                                <select
-                                                    className="w-full bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-gold/50 font-medium appearance-none"
-                                                    value={formData.partnerType}
-                                                    onChange={(e) => setFormData({ ...formData, partnerType: e.target.value })}
-                                                >
-                                                    <option>Referral Partner</option>
-                                                    <option>Builder Relationship Manager</option>
-                                                    <option>Contractor / Broker Assoc</option>
-                                                    <option>Loan Advisor</option>
-                                                </select>
-                                            </div>
-                                            <div className="relative group/input">
-                                                <Building2 className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Organization Name*"
-                                                    className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 focus:ring-2 focus:ring-gold/50 font-medium"
-                                                    value={formData.businessName}
-                                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="relative group/input">
-                                                <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Office Address (Pincode, City)*"
-                                                    className="w-full bg-white/5 border-none rounded-2xl py-4 pl-14 pr-6 focus:ring-2 focus:ring-gold/50 font-medium"
-                                                    value={formData.officeAddress}
-                                                    onChange={(e) => setFormData({ ...formData, officeAddress: e.target.value })}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-
                                 </div>
 
-                                <div className="mt-10">
+                                <div className="mt-12">
                                     <button
                                         onClick={handleFinalSubmit}
                                         disabled={loading}
-                                        className="w-full bg-gold text-white font-black uppercase tracking-[0.2em] text-xs py-5 rounded-2xl hover:bg-gold-dark transition-all shadow-xl shadow-gold/20 flex items-center justify-center gap-3 disabled:opacity-50"
+                                        className="w-full bg-gold text-white font-black uppercase tracking-[0.3em] text-[10px] py-6 rounded-3xl hover:bg-gold-dark transition-all shadow-2xl flex items-center justify-center gap-4 disabled:opacity-50 active:scale-[0.98]"
                                     >
-                                        {loading ? <Loader2 className="animate-spin" /> : <Rocket size={16} />}
-                                        Complete Registration
+                                        {loading ? <Loader2 className="animate-spin" /> : <Sparkles size={18} fill="currentColor" />}
+                                        Go Live on BidMetric
                                     </button>
                                 </div>
                             </div>
                         )}
 
-                        {/* 5. Success Screen */}
+                        {/* STEP 5: SUCCESS & WELCOME */}
                         {step === 'success' && (
-                            <div className="animate-in fade-in zoom-in duration-700 text-center">
-                                <div className="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 mx-auto mb-10 shadow-[0_0_50px_rgba(34,197,94,0.2)]">
-                                    <CheckCircle2 size={48} className="animate-bounce" />
+                            <div className="animate-in fade-in zoom-in duration-1000 text-center py-10">
+                                <div className="w-28 h-28 bg-gold/10 rounded-full flex items-center justify-center text-gold mx-auto mb-10 shadow-[0_0_80px_rgba(212,175,55,0.2)]">
+                                    <Rocket size={56} className="animate-bounce" />
                                 </div>
-                                <h1 className="text-4xl font-black mb-4 tracking-tighter uppercase italic">Welcome to Boli</h1>
-                                <p className="text-gray-400 mb-12 font-medium leading-relaxed">
+                                <h1 className="text-5xl font-black mb-4 italic tracking-tighter uppercase tracking-[0.1em]">You are Live.</h1>
+                                <p className="text-gray-400 mb-12 font-medium max-w-sm mx-auto leading-relaxed">
                                     {role === 'buyer'
-                                        ? "Start browsing Mira Road properties and book your first site visit today!"
-                                        : "Your Golden Page has been auto-created. List your first property to appear at the top of buyer searches."}
+                                        ? "Your account is verified. Start exploring Mira Road's best deals with AI analytics."
+                                        : "Your Golden Page is now public. You can start listing properties and capturing high-intent leads immediately."}
                                 </p>
 
                                 <div className="flex flex-col gap-4">
                                     <button
                                         onClick={() => router.push(role === 'buyer' ? '/buyer/home' : '/dashboard')}
-                                        className="w-full bg-white text-black font-black uppercase tracking-[0.2em] text-xs py-5 rounded-2xl hover:bg-gray-200 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.05)] active:scale-[0.98]"
+                                        className="w-full bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] py-6 rounded-3xl hover:bg-gold hover:text-white transition-all shadow-2xl"
                                     >
-                                        Go to {role === 'buyer' ? 'Home' : 'Dashboard'}
+                                        Enter Dashboard
                                     </button>
-                                    {role !== 'buyer' && (
-                                        <button className="text-gold text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
-                                            View your Golden Page
-                                        </button>
-                                    )}
+                                    <button className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 hover:text-gold transition-colors">
+                                        Take a Feature Tour
+                                    </button>
                                 </div>
                             </div>
                         )}
-
-                        {/* Micro-Interaction Highlight */}
-                        <div className={`absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-[60px] translate-x-16 -translate-y-16 transition-opacity duration-700 ${step === 'success' ? 'opacity-100' : 'opacity-0'}`} />
                     </div>
 
-                    {/* Bottom Help */}
+                    {/* Footer Branding */}
                     {step !== 'success' && (
-                        <div className="mt-8 flex items-center justify-center gap-6">
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                                <ShieldCheck size={14} className="text-gold" /> SSL Secure
+                        <div className="mt-12 flex items-center justify-between opacity-30 hover:opacity-100 transition-opacity">
+                            <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secured by BidMetric</span>
+                                <div className="h-4 w-px bg-white/10" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">{role.replace('_', ' ')} path</span>
                             </div>
-                            <div className="h-4 w-px bg-white/10" />
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                                <Info size={14} className="text-gold" /> Help Center
-                            </div>
+                            <img src="/logo-mini.png" className="h-6 grayscale" alt="" />
                         </div>
                     )}
                 </div>
             </main>
 
             <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(212, 175, 55, 0.2);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(212, 175, 55, 0.4);
-        }
-      `}</style>
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(212, 175, 55, 0.15);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(212, 175, 55, 0.4);
+                }
+            `}</style>
         </div>
     );
 }

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
         const {
             role, fullName, phone, email, pincode,
             businessName, reraNumber, officeAddress,
-            partnerType, localities, commission
+            partnerType, localities, commission, bio
         } = body;
 
         // 1. In a real app, we'd use supabase.auth.signUp() here.
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
                     phone,
                     email,
                     location: pincode,
-                    bio: `Professional ${role === 'rera_seller' ? 'RERA Authorized Seller' : 'Channel Partner'} serving ${localities?.join(', ') || 'Mira Road'}.`,
+                    bio: bio || `Professional ${role === 'rera_seller' ? 'RERA Authorized Seller' : 'Channel Partner'} serving ${localities?.join(', ') || 'Mira Road'}.`,
                     verified: false,
                     rera_verified: false,
                     golden_page_active: true,
