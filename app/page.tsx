@@ -13,8 +13,7 @@ export default async function Home() {
       <script dangerouslySetInnerHTML={{
         __html: `
           const url = new URL(window.location.href);
-          const code = url.searchParams.get('code');
-          if (code) {
+          if (url.searchParams.has('code')) {
             window.location.href = '/auth/callback' + window.location.search;
           }
         `

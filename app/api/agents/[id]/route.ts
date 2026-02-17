@@ -2,22 +2,22 @@ import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
- * GET /api/agents/[slug]
- * Get public agent page data
+ * GET /api/agents/[id]
+ * Get public agent page data by slug or ID
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ slug: string }> }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
-    const { slug } = await params
+    const { id: identifier } = await params
 
     try {
-        // Fetch agent
+        // Fetch agent (try slug or id)
         const { data: agent, error: agentError } = await supabase
             .from('agents')
             .select('*')
-            .eq('slug', slug)
+            .or(`slug.eq.${identifier},id.eq.${identifier}`)
             .eq('status', 'active')
             .single()
 
