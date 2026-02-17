@@ -167,7 +167,7 @@ export default function AnalyticsPage() {
                                 Browse Listings
                             </Link>
                             <Link
-                                href="/signup"
+                                href="/register"
                                 className="px-10 py-4 bg-transparent border border-white/20 text-white font-bold rounded-2xl hover:bg-white/5 transition-all"
                             >
                                 Start Selling

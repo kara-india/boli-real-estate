@@ -4,12 +4,22 @@ import React, { useState, useEffect } from 'react';
 import {
     ArrowLeft, ArrowRight, BadgeCheck, Building2, CheckCircle2, ChevronRight, Clock, Filter, Heart, Home, Info, MapPin, MessageSquare, Navigation, Phone, Plus, Search, Share2, ShieldCheck, Sparkles, Star, TrendingUp, Users, Zap
 } from 'lucide-react';
+import ContactGatedModal from '@/components/leads/ContactGatedModal';
+import { useRouter } from 'next/navigation';
 
 export default function BuyerHomePage() {
     const [activeTab, setActiveTab] = useState<'properties' | 'listers'>('properties');
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [locality, setLocality] = useState('Mira Road East');
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [selectedProperty, setSelectedProperty] = useState<any>(null);
+    const router = useRouter();
+
+    const openContactModal = (prop: any) => {
+        setSelectedProperty(prop);
+        setIsContactModalOpen(true);
+    };
 
     useEffect(() => {
         fetchData();
@@ -116,7 +126,7 @@ export default function BuyerHomePage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {data?.properties?.filter((p: any) => p.is_boosted).slice(0, 3).map((prop: any) => (
-                                    <PropertyCard key={prop.id} property={prop} boosted />
+                                    <PropertyCard key={prop.id} property={prop} boosted onContact={openContactModal} />
                                 ))}
                             </div>
                         </div>
@@ -132,7 +142,7 @@ export default function BuyerHomePage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {data?.properties?.filter((p: any) => !p.is_boosted).map((prop: any) => (
-                                    <PropertyCard key={prop.id} property={prop} />
+                                    <PropertyCard key={prop.id} property={prop} onContact={openContactModal} />
                                 ))}
                             </div>
                         </div>
@@ -152,7 +162,20 @@ export default function BuyerHomePage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {data?.listers?.map((lister: any) => (
-                                    <ListerCard key={lister.id} lister={lister} />
+                                    <ListerCard
+                                        key={lister.id}
+                                        lister={lister}
+                                        onContact={() => openContactModal({
+                                            id: lister.id,
+                                            title: `Agent: ${lister.name}`,
+                                            price: 0,
+                                            location: lister.location,
+                                            lister_id: lister.id,
+                                            lister_name: lister.name,
+                                            lister_phone: lister.phone || '+91 9999900000'
+                                        })}
+                                        onViewPage={() => router.push(`/golden/${lister.slug}`)}
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -160,11 +183,27 @@ export default function BuyerHomePage() {
                 )}
 
             </main>
+
+            {selectedProperty && (
+                <ContactGatedModal
+                    isOpen={isContactModalOpen}
+                    onClose={() => setIsContactModalOpen(false)}
+                    property={{
+                        id: selectedProperty.id,
+                        title: selectedProperty.title,
+                        price: selectedProperty.price,
+                        location: selectedProperty.location,
+                        lister_id: selectedProperty.agent_id || selectedProperty.lister_id,
+                        lister_name: selectedProperty.agent?.name || selectedProperty.name,
+                        lister_phone: selectedProperty.agent?.phone || selectedProperty.phone || '+91 9999900000'
+                    }}
+                />
+            )}
         </div>
     );
 }
 
-function PropertyCard({ property, boosted }: { property: any, boosted?: boolean }) {
+function PropertyCard({ property, boosted, onContact }: { property: any, boosted?: boolean, onContact?: (p: any) => void }) {
     return (
         <div className={`group relative bg-white rounded-[2.5rem] border transition-all duration-500 overflow-hidden ${boosted ? 'border-gold shadow-2xl shadow-gold/5 ring-1 ring-gold/20' : 'border-gray-100 hover:shadow-xl'}`}>
             <div className="aspect-[4/3] relative overflow-hidden">
@@ -226,7 +265,10 @@ function PropertyCard({ property, boosted }: { property: any, boosted?: boolean 
                             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Lister</div>
                         </div>
                     </div>
-                    <button className="bg-gray-900 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all">
+                    <button
+                        onClick={() => onContact?.(property)}
+                        className="bg-gray-900 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all"
+                    >
                         See Details
                     </button>
                 </div>
@@ -235,7 +277,7 @@ function PropertyCard({ property, boosted }: { property: any, boosted?: boolean 
     );
 }
 
-function ListerCard({ lister }: { lister: any }) {
+function ListerCard({ lister, onContact, onViewPage }: { lister: any, onContact?: () => void, onViewPage?: () => void }) {
     return (
         <div className="group bg-white rounded-[2.5rem] border border-gray-100 p-8 hover:shadow-2xl hover:border-gold/20 transition-all duration-500 flex flex-col md:flex-row gap-8">
             <div className="w-32 h-32 bg-gray-50 rounded-[2rem] overflow-hidden relative border-4 border-white shadow-lg shrink-0">
@@ -288,22 +330,17 @@ function ListerCard({ lister }: { lister: any }) {
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
                     <button
-                        onClick={() => {
-                            // Requirement Event: golden_page_created / navigation
-                            console.log(`[EVENT] redirection_to_dashboard_from_success`);
-                            // router.push(role === 'buyer' ? '/buyer/home' : '/dashboard'); // router and role are not defined in this component
-                        }}
-                        className="w-full bg-white text-black font-black uppercase tracking-[0.2em] text-xs py-5 rounded-2xl hover:bg-gray-200 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.05)] active:scale-[0.98]"
+                        onClick={onViewPage}
+                        className="flex-1 bg-gold text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gold-dark transition-all shadow-lg shadow-gold/10"
                     >
-                        {/* Go to {role === 'buyer' ? 'Home' : 'Dashboard'} */} {/* role is not defined in this component */}
                         View Golden Page
                     </button>
-                    <button className="p-4 bg-gray-50 text-gray-900 rounded-2xl hover:bg-gray-100 transition-all">
+                    <button onClick={onContact} className="p-4 bg-gray-50 text-gray-900 rounded-2xl hover:bg-gray-100 transition-all">
                         <MessageSquare size={18} />
                     </button>
-                    <button className="p-4 bg-gray-50 text-gray-900 rounded-2xl hover:bg-gray-100 transition-all">
+                    <button onClick={onContact} className="p-4 bg-gray-50 text-gray-900 rounded-2xl hover:bg-gray-100 transition-all">
                         <Phone size={18} />
                     </button>
                 </div>

@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { MapPin, BedDouble, Bath, Square, Loader2, ArrowRight, ShieldCheck, Clock } from 'lucide-react'
+import { MapPin, BedDouble, Bath, Square, Loader2, ArrowRight, ShieldCheck, Clock, Sparkles } from 'lucide-react'
 import { differenceInDays } from 'date-fns'
 
 type Property = {
@@ -20,6 +20,7 @@ type Property = {
     bathrooms: number
     image_url: string
     status: string
+    is_boosted?: boolean
     owner_timer_expiry?: string
 }
 
@@ -102,7 +103,12 @@ export default function ListingsPage() {
                                         />
 
                                         {/* Status & Type Badges */}
-                                        <div className="absolute top-4 right-4 flex flex-col gap-2">
+                                        <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                                            {property.is_boosted && (
+                                                <div className="bg-gold text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-1.5 shadow-xl shadow-gold/20">
+                                                    <Sparkles size={10} fill="currentColor" /> Boosted
+                                                </div>
+                                            )}
                                             <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-xl text-[10px] font-bold text-gray-800 border border-gray-100 shadow-sm uppercase tracking-wide">
                                                 {property.type}
                                             </div>

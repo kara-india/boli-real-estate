@@ -8,6 +8,7 @@ import {
     CheckCircle2, Info, ArrowLeft, Plus, ArrowRight
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import ContactGatedModal from '@/components/leads/ContactGatedModal';
 
 export default function GoldenPage() {
     const { slug } = useParams();
@@ -17,6 +18,21 @@ export default function GoldenPage() {
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isBuyer, setIsBuyer] = useState(false);
+
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [selectedProperty, setSelectedProperty] = useState<any>(null);
+
+    const openContactModal = (prop?: any) => {
+        setSelectedProperty(prop || {
+            id: 'general',
+            title: `General Inquiry: ${lister.name}`,
+            price: 0,
+            location: lister.location,
+            agent_id: lister.id,
+            agent: { name: lister.name, phone: lister.phone }
+        });
+        setIsContactModalOpen(true);
+    };
 
     useEffect(() => {
         checkAccessAndFetch();
@@ -134,7 +150,10 @@ export default function GoldenPage() {
                             <button className="bg-white/10 hover:bg-white/20 p-5 rounded-3xl backdrop-blur-md transition-all">
                                 <Share2 size={24} />
                             </button>
-                            <button className="bg-gold text-white px-10 py-5 rounded-[1.8rem] font-black uppercase tracking-widest shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+                            <button
+                                onClick={() => openContactModal()}
+                                className="bg-gold text-white px-10 py-5 rounded-[1.8rem] font-black uppercase tracking-widest shadow-2xl shadow-gold/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+                            >
                                 <MessageSquare size={20} /> Message
                             </button>
                         </div>
@@ -196,7 +215,12 @@ export default function GoldenPage() {
                                         <p className="text-xs text-gray-400 font-bold uppercase tracking-tight mb-4">{prop.location}</p>
                                         <div className="flex justify-between items-center">
                                             <span className="text-xl font-black text-gold">₹{(prop.price / 100000).toFixed(1)}L</span>
-                                            <button className="text-gray-900 hover:text-gold transition-colors"><ArrowRight size={20} /></button>
+                                            <button
+                                                onClick={() => openContactModal(prop)}
+                                                className="text-gray-900 hover:text-gold transition-colors"
+                                            >
+                                                <ArrowRight size={20} />
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -225,10 +249,16 @@ export default function GoldenPage() {
                             <p className="text-gray-400 text-xs font-medium leading-relaxed mb-10">Get priority response for your property enquiries.</p>
 
                             <div className="space-y-4 mb-10">
-                                <button className="w-full bg-gold text-white font-black uppercase tracking-[0.2em] text-[10px] py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-gold-dark transition-all shadow-xl shadow-gold/20">
+                                <button
+                                    onClick={() => openContactModal()}
+                                    className="w-full bg-gold text-white font-black uppercase tracking-[0.2em] text-[10px] py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-gold-dark transition-all shadow-xl shadow-gold/20"
+                                >
                                     <Phone size={16} /> Call Representative
                                 </button>
-                                <button className="w-full bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
+                                <button
+                                    onClick={() => openContactModal()}
+                                    className="w-full bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all"
+                                >
                                     <CheckCircle2 size={16} /> Request Callback
                                 </button>
                             </div>
@@ -257,6 +287,22 @@ export default function GoldenPage() {
                 </div>
 
             </main>
+
+            {selectedProperty && (
+                <ContactGatedModal
+                    isOpen={isContactModalOpen}
+                    onClose={() => setIsContactModalOpen(false)}
+                    property={{
+                        id: selectedProperty.id,
+                        title: selectedProperty.title,
+                        price: selectedProperty.price,
+                        location: selectedProperty.location,
+                        lister_id: lister.id,
+                        lister_name: lister.name,
+                        lister_phone: lister.phone || '+91 9999900000'
+                    }}
+                />
+            )}
         </div>
     );
 }

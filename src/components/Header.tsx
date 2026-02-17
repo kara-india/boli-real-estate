@@ -51,6 +51,9 @@ export default function Header() {
                         <Link href="/analytics" className={`text-sm tracking-wide transition-colors ${isActive('/analytics')}`}>
                             Analytics
                         </Link>
+                        <Link href="/partners" className={`text-sm tracking-wide transition-colors ${isActive('/partners')}`}>
+                            Partners
+                        </Link>
                         {session && (
                             <>
                                 <Link href="/dashboard" className={`text-sm tracking-wide transition-colors ${isActive('/dashboard')}`}>
@@ -93,7 +96,7 @@ export default function Header() {
                                     Log In
                                 </Link>
                                 <Link
-                                    href="/signup"
+                                    href="/register"
                                     className="px-5 py-2.5 text-sm font-bold bg-gold text-white rounded-xl shadow-lg shadow-gold/20 hover:bg-gold-dark hover:shadow-gold/30 hover:-translate-y-0.5 transition-all"
                                 >
                                     Get Started

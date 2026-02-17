@@ -146,7 +146,7 @@ export default function LoginPage() {
 
                     <div className="mt-12 text-center text-sm font-medium text-gray-400">
                         New to the platform?{' '}
-                        <Link href="/signup" className="font-black text-gray-900 hover:text-gold-dark transition-colors">
+                        <Link href="/register" className="font-black text-gray-900 hover:text-gold-dark transition-colors">
                             Establish Account
                         </Link>
                     </div>

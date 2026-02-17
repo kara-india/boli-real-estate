@@ -1,7 +1,7 @@
 
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { ShieldCheck, Zap, ArrowRight, Building, Award } from 'lucide-react'
+import { ShieldCheck, Zap, ArrowRight, Building, Award, Users } from 'lucide-react'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -40,7 +40,10 @@ export default async function Home() {
                 <Link href="/listings" className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:-translate-y-1">
                   Browse Properties
                 </Link>
-                <Link href="/signup" className="px-8 py-4 bg-white text-gold-dark border border-gold/30 rounded-xl font-bold text-lg hover:bg-gold/5 transition-all flex items-center gap-2 hover:-translate-y-1">
+                <Link href="/partners" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all hover:-translate-y-1 flex items-center gap-2">
+                  Browse Partners <Users size={18} />
+                </Link>
+                <Link href="/register" className="px-8 py-4 bg-gold text-white rounded-xl font-bold text-lg hover:bg-gold-dark transition-all flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-gold/20">
                   Get Started <ArrowRight size={18} />
                 </Link>
               </>
@@ -49,7 +52,10 @@ export default async function Home() {
                 <Link href="/listings" className="px-8 py-4 bg-gold text-white rounded-xl font-bold text-lg hover:bg-gold-dark transition-all shadow-xl shadow-gold/20 hover:-translate-y-1">
                   Browse Properties
                 </Link>
-                <Link href="/dashboard" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all hover:-translate-y-1">
+                <Link href="/partners" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all hover:-translate-y-1 flex items-center gap-2">
+                  Browse Partners <Users size={18} />
+                </Link>
+                <Link href="/dashboard" className="px-8 py-4 bg-gray-900 text-white border border-gray-900 rounded-xl font-bold text-lg hover:bg-black transition-all hover:-translate-y-1">
                   My Dashboard
                 </Link>
               </>
