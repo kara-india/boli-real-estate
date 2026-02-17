@@ -1,23 +1,23 @@
 
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import { ShieldCheck, Zap, ArrowRight, Building, Award, Users } from 'lucide-react'
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const params = await searchParams
+
+  // If Supabase redirects here with a code, forward to the callback route BEFORE touching any auth
+  if (params.code) {
+    redirect(`/auth/callback?code=${params.code}`)
+  }
+
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
 
   // Fallback: If Supabase redirects here instead of /auth/callback
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-gold/20 relative">
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          const url = new URL(window.location.href);
-          if (url.searchParams.has('code')) {
-            window.location.href = '/auth/callback' + window.location.search;
-          }
-        `
-      }} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
