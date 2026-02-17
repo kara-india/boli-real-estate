@@ -3,10 +3,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
-    let response = NextResponse.next({
-        request: {
-            headers: request.headers,
-        },
+    let supabaseResponse = NextResponse.next({
+        request,
     })
 
     const supabase = createServerClient(
@@ -19,26 +17,25 @@ export async function updateSession(request: NextRequest) {
                 },
                 setAll(cookiesToSet) {
                     cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-                    response = NextResponse.next({
-                        request: {
-                            headers: request.headers,
-                        },
+                    supabaseResponse = NextResponse.next({
+                        request,
                     })
                     cookiesToSet.forEach(({ name, value, options }) =>
-                        response.cookies.set(name, value, options)
+                        supabaseResponse.cookies.set(name, value, options)
                     )
                 },
             },
         }
     )
 
+    // Do not run on callback
+    if (request.nextUrl.pathname.startsWith('/auth/callback')) {
+        return supabaseResponse
+    }
+
     // IMPORTANT: Avoid writing any logic between createServerClient and
-    // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-    // auth issues.
+    // supabase.auth.getUser().
+    await supabase.auth.getUser()
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
-
-    return response
+    return supabaseResponse
 }

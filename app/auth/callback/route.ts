@@ -11,6 +11,10 @@ export async function GET(request: Request) {
 
     if (code) {
         const cookieStore = await cookies()
+        console.log('--- Auth Callback Debug ---')
+        console.log('Code present:', !!code)
+        console.log('All cookies:', cookieStore.getAll().map(c => c.name))
+
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
