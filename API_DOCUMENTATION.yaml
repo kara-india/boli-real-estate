@@ -1,0 +1,469 @@
+openapi: 3.0.0
+info:
+  title: Boli Real Estate Platform API V2
+  description: |
+    API for the Boli Real Estate Platform with static valuation model and ethical bidding constraints.
+    
+    **Key Features**:
+    - Static BidMetric price (precomputed, never changes due to bids)
+    - Server-side validation for owner price (±10% of BidMetric)
+    - Bounded bid slider with ±5% constraints
+    - Motivated sale tracking with countdown timers
+    - Seller dashboard with bid acceptance/rejection
+    - Immutable audit logs for all transactions
+    
+  version: 2.0.0
+  contact:
+    name: Boli Platform Team
+    email: api@boli-real-estate.vercel.app
+
+servers:
+  - url: https://boli-real-estate.vercel.app/api
+    description: Production server
+  - url: http://localhost:3000/api
+    description: Development server
+
+tags:
+  - name: Properties
+    description: Property listings and valuation data
+  - name: Bids
+    description: Bid placement and management
+  - name: Seller
+    description: Seller dashboard and bid acceptance
+
+paths:
+  /properties/{id}:
+    get:
+      tags:
+        - Properties
+      summary: Get property details with valuation
+      description: Returns complete property information including BidMetric price, slider bounds, valuation factors, and motivated sale status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "BLR-001"
+      responses:
+        '200':
+          description: Property details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyWithValuation'
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /properties/{id}/bids:
+    post:
+      tags:
+        - Bids
+      summary: Place a bid on a property
+      description: |
+        Submit a bid for a property. Server validates:
+        - Bid is within slider bounds (lower_bound ≤ bid ≤ upper_bound)
+        - Bid is higher than current highest bid
+        - Property is available (not under contract)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "BLR-001"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BidRequest'
+      responses:
+        '201':
+          description: Bid placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BidResponse'
+        ' 400':
+          description: Invalid bid (out of bounds or below current highest)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Property not found
+
+    get:
+      tags:
+        - Bids
+        - Seller
+      summary: Get all bids for a property
+      description: Returns list of bids for a property (seller/admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "BLR-001"
+      responses:
+        '200':
+          description: List of bids retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bids:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bid'
+                  count:
+                    type: integer
+                    example: 5
+
+  /bids/{id}/accept:
+    post:
+      tags:
+        - Bids
+        - Seller
+      summary: Accept a bid (seller only)
+      description: |
+        Seller accepts a bid, triggering:
+        - Bid status → "accepted"
+        - Property status → "under_contract"
+        - 24-hour soft-lock period for payment processing
+        - Monetization event webhook
+        - Audit log entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seller_id:
+                  type: string
+                  format: uuid
+                  description: ID of the seller (must be property owner)
+              required:
+                - seller_id
+      responses:
+        '200':
+          description: Bid accepted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptBidResponse'
+        '403':
+          description: Unauthorized - seller does not own property
+        '404':
+          description: Bid not found
+
+  /bids/{id}:
+    delete:
+      tags:
+        - Bids
+        - Seller
+      summary: Reject a bid (seller only)
+      description: Seller rejects a bid with optional reason
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seller_id:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+                  example: "Seller chose a different offer"
+              required:
+                - seller_id
+      responses:
+        '200':
+          description: Bid rejected successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "rejected"
+                  message:
+                    type: string
+                    example: "Bid rejected successfully"
+
+components:
+  schemas:
+    PropertyWithValuation:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "BLR-001"
+        title:
+          type: string
+          example: "2 BHK Premium Apartment in Whitefield"
+        description:
+          type: string
+        location:
+          type: string
+          example: "Whitefield, Bengaluru"
+        sqft:
+          type: integer
+          example: 950
+        bedrooms:
+          type: integer
+          example: 2
+        bathrooms:
+          type: integer
+          example: 2
+        type:
+          type: string
+          enum: ["Apartment", "Villa", "Studio", "Penthouse"]
+        image_url:
+          type: string
+          format: uri
+        status:
+          type: string
+          enum: ["available", "under_contract", "sold"]
+        owner_price:
+          type: number
+          description: Owner's asking price (must be within ±10% of bidmetric_price)
+          example: 8500000
+        bidmetric_price:
+          type: number
+          description: Static AI-computed fair market value (does NOT change with bids)
+          example: 8000000
+        market_price:
+          type: number
+          description: Base market price (sqft × local avg rate)
+          example: 8050000
+        last_sale_comparable_price:
+          type: number
+          nullable: true
+          description: Recent comparable sale price (optional)
+          example: 7900000
+        slider_bounds:
+          type: object
+          properties:
+            lower_percent:
+              type: number
+              format: float
+              example: -3.75
+            upper_percent:
+              type: number
+              format: float
+              example: 5.00
+            lower_absolute:
+              type: number
+              example: 7700000
+            upper_absolute:
+              type: number
+              example: 8400000
+        builder_confidence:
+          type: object
+          properties:
+            score:
+              type: integer
+              minimum: 0
+              maximum: 100
+              example: 80
+            label:
+              type: string
+              enum: ["high", "medium", "low"]
+            builder_name:
+              type: string
+              example: "Prestige Group"
+            factors:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "delivery_timeliness"
+                  impact:
+                    type: integer
+                    example: 8
+        valuation:
+          type: object
+          properties:
+            confidence_interval:
+              type: number
+              description: Margin of error (±%)
+              example: 4.7
+            top5_factors:
+              type: array
+              items:
+                type: object
+                properties:
+                  factor:
+                    type: string
+                    example: "IT Hub Proximity"
+                  impact_percent:
+                    type: number
+                    example: 12.5
+            last_updated:
+              type: string
+              format: date-time
+            provenance:
+              type: string
+              example: "BidMetric derived from HPI, local comps, and infrastructure data — last updated 2026-02-17"
+        motivated_sale:
+          type: object
+          properties:
+            is_motivated:
+              type: boolean
+              example: false
+            expires_in_days:
+              type: integer
+              nullable: true
+              example: null
+            label:
+              type: string
+              nullable: true
+              example: null
+
+    BidRequest:
+      type: object
+      required:
+        - user_id
+        - bid_amount
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        bid_amount:
+          type: number
+          description: Bid amount in INR
+          minimum: 0
+          example: 8200000
+
+    BidResponse:
+      type: object
+      properties:
+        bid_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        status:
+          type: string
+          example: "placed"
+        created_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+          description: Bid automatically expires after 7 days
+        message:
+          type: string
+          example: "Bid placed successfully"
+
+    Bid:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          example: 8200000
+        status:
+          type: string
+          enum: ["placed", "accepted", "rejected", "expired"]
+        created_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        accepted_at:
+          type: string
+          format: date-time
+          nullable: true
+        users:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            email:
+              type: string
+              format: email
+
+    AcceptBidResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: accepted"
+        soft_lock_until:
+          type: string
+          format: date-time
+          description: 24-hour hold period for payment processing
+        message:
+          type: string
+          example: "Bid accepted successfully. Payment processing will begin within 24 hours."
+        next_steps:
+          type: array
+          items:
+            type: string
+          example:
+            - "Payment processing initiated"
+            - "Property marked as under contract"
+            - "Buyer will be notified within 1 hour"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Bid amount must be at least ₹77.00 L"
+        min_allowed:
+          type: number
+          nullable: true
+          example: 7700000
+        max_allowed:
+          type: number
+          nullable: true
+          example: 8400000
+        current_highest:
+          type: number
+          nullable: true
+          description: Current highest bid (if applicable)
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

@@ -1,0 +1,593 @@
+[
+    {
+        "id": "BLR-001",
+        "title": "2 BHK Premium Apartment in Whitefield",
+        "city": "Bengaluru",
+        "locality": "Whitefield",
+        "sqft": 950,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "owner_price": 8500000,
+        "bidmetric_price": 8000000,
+        "market_price": 8050000,
+        "lastSaleComparable_price": 7900000,
+        "builder": "Prestige Group",
+        "builder_confidence_score": 80,
+        "confidence_interval": 4.7,
+        "listed_timestamp": "2026-02-01T09:00:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -3.75,
+            "upper_percent": 5.00,
+            "lower_absolute": 7700000,
+            "upper_absolute": 8400000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "IT Hub Proximity",
+                    "impact_percent": 12.5
+                },
+                {
+                    "factor": "Metro Connectivity",
+                    "impact_percent": 8.3
+                },
+                {
+                    "factor": "Builder Premium (High)",
+                    "impact_percent": 7.4
+                },
+                {
+                    "factor": "Infrastructure Score",
+                    "impact_percent": 5.9
+                },
+                {
+                    "factor": "Upcoming Projects",
+                    "impact_percent": 3.7
+                }
+            ]
+        },
+        "motivated_sale": false
+    },
+    {
+        "id": "MUM-002",
+        "title": "1 RK Compact Studio in Andheri West",
+        "city": "Mumbai",
+        "locality": "Andheri West",
+        "sqft": 380,
+        "bedrooms": 0,
+        "bathrooms": 1,
+        "owner_price": 12000000,
+        "bidmetric_price": 11500000,
+        "market_price": 11650000,
+        "lastSaleComparable_price": 11400000,
+        "builder": "Lodha Group",
+        "builder_confidence_score": 85,
+        "confidence_interval": 3.8,
+        "listed_timestamp": "2026-01-20T10:00:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -4.35,
+            "upper_percent": 5.00,
+            "lower_absolute": 11000000,
+            "upper_absolute": 12075000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Prime Location (Andheri West)",
+                    "impact_percent": 15.2
+                },
+                {
+                    "factor": "Metro Accessibility",
+                    "impact_percent": 10.5
+                },
+                {
+                    "factor": "Builder Confidence (High)",
+                    "impact_percent": 8.0
+                },
+                {
+                    "factor": "Rental Yield Potential",
+                    "impact_percent": 6.8
+                },
+                {
+                    "factor": "Commercial Hub Proximity",
+                    "impact_percent": 5.5
+                }
+            ]
+        },
+        "motivated_sale": false
+    },
+    {
+        "id": "DEL-003",
+        "title": "3 BHK Spacious Flat in Dwarka Sector 12",
+        "city": "New Delhi",
+        "locality": "Dwarka",
+        "sqft": 1400,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "owner_price": 14000000,
+        "bidmetric_price": 15000000,
+        "market_price": 14900000,
+        "lastSaleComparable_price": 14850000,
+        "builder": "Godrej Properties",
+        "builder_confidence_score": 88,
+        "confidence_interval": 5.2,
+        "listed_timestamp": "2026-01-10T08:00:00Z",
+        "owner_timer_expiry": "2026-04-10T08:00:00Z",
+        "slider_bounds": {
+            "lower_percent": -6.67,
+            "upper_percent": 5.00,
+            "lower_absolute": 14000000,
+            "upper_absolute": 15750000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Airport Corridor Development",
+                    "impact_percent": 11.3
+                },
+                {
+                    "factor": "Government Infrastructure Projects",
+                    "impact_percent": 9.7
+                },
+                {
+                    "factor": "Builder Confidence (High)",
+                    "impact_percent": 8.5
+                },
+                {
+                    "factor": "Spacious Layout Premium",
+                    "impact_percent": 7.2
+                },
+                {
+                    "factor": "Metro Line 9 Extension",
+                    "impact_percent": 4.8
+                }
+            ]
+        },
+        "motivated_sale": true,
+        "motivated_sale_label": "Owner relocating internationally — price reduced for 90 days"
+    },
+    {
+        "id": "PUNE-004",
+        "title": "3 BHK Tech Park Adjacent in Hinjewadi Phase 2",
+        "city": "Pune",
+        "locality": "Hinjewadi Phase 2",
+        "sqft": 1250,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "owner_price": 10500000,
+        "bidmetric_price": 10000000,
+        "market_price": 10100000,
+        "lastSaleComparable_price": 9950000,
+        "builder": "Runwal Developers",
+        "builder_confidence_score": 72,
+        "confidence_interval": 6.1,
+        "listed_timestamp": "2026-02-05T11:00:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -5.00,
+            "upper_percent": 5.00,
+            "lower_absolute": 9500000,
+            "upper_absolute": 10500000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "IT Park Proximity",
+                    "impact_percent": 14.2
+                },
+                {
+                    "factor": "Rental Yield (7.5%)",
+                    "impact_percent": 8.9
+                },
+                {
+                    "factor": "Infrastructure Score",
+                    "impact_percent": 6.3
+                },
+                {
+                    "factor": "Builder Confidence (Medium)",
+                    "impact_percent": 4.5
+                },
+                {
+                    "factor": "Phase 2 Development",
+                    "impact_percent": 3.8
+                }
+            ]
+        },
+        "motivated_sale": false
+    },
+    {
+        "id": "HYD-005",
+        "title": "2 BHK in Financial District, Gachibowli",
+        "city": "Hyderabad",
+        "locality": "Gachibowli",
+        "sqft": 1150,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "owner_price": 7200000,
+        "bidmetric_price": 6666666,
+        "market_price": 6700000,
+        "lastSaleComparable_price": 6550000,
+        "builder": "Prestige Group",
+        "builder_confidence_score": 80,
+        "confidence_interval": 5.5,
+        "listed_timestamp": "2026-01-25T09:30:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -5.00,
+            "upper_percent": 5.00,
+            "lower_absolute": 6333333,
+            "upper_absolute": 7000000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Financial District Growth",
+                    "impact_percent": 13.7
+                },
+                {
+                    "factor": "IT Company Concentration",
+                    "impact_percent": 10.2
+                },
+                {
+                    "factor": "Builder Premium (High)",
+                    "impact_percent": 7.6
+                },
+                {
+                    "factor": "Vastu Compliance",
+                    "impact_percent": 5.4
+                },
+                {
+                    "factor": "Infrastructure Score",
+                    "impact_percent": 4.9
+                }
+            ]
+        },
+        "motivated_sale": false
+    },
+    {
+        "id": "CHN-006",
+        "title": "3 BHK Sea Facing Apartment on OMR",
+        "city": "Chennai",
+        "locality": "OMR",
+        "sqft": 1380,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "owner_price": 8800000,
+        "bidmetric_price": 9620000,
+        "market_price": 9600000,
+        "lastSaleComparable_price": 9550000,
+        "builder": "Godrej Properties",
+        "builder_confidence_score": 88,
+        "confidence_interval": 4.3,
+        "listed_timestamp": "2026-01-15T10:00:00Z",
+        "owner_timer_expiry": "2026-03-16T10:00:00Z",
+        "slider_bounds": {
+            "lower_percent": -8.51,
+            "upper_percent": 5.00,
+            "lower_absolute": 8800000,
+            "upper_absolute": 10101000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Sea View Premium",
+                    "impact_percent": 16.8
+                },
+                {
+                    "factor": "OMR IT Corridor",
+                    "impact_percent": 11.5
+                },
+                {
+                    "factor": "Builder Confidence (High)",
+                    "impact_percent": 9.2
+                },
+                {
+                    "factor": "Beach Proximity",
+                    "impact_percent": 7.3
+                },
+                {
+                    "factor": "Airport Access",
+                    "impact_percent": 5.8
+                }
+            ]
+        },
+        "motivated_sale": true,
+        "motivated_sale_label": "Owner needs immediate funds — price valid for 60 days"
+    },
+    {
+        "id": "MUM-007",
+        "title": "2 BHK Affordable Housing in Mira Road",
+        "city": "Mumbai",
+        "locality": "Mira Road East",
+        "sqft": 850,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "owner_price": 6100000,
+        "bidmetric_price": 5600000,
+        "market_price": 5650000,
+        "lastSaleComparable_price": 5500000,
+        "builder": "Lodha Group",
+        "builder_confidence_score": 85,
+        "confidence_interval": 6.8,
+        "listed_timestamp": "2026-02-08T12:00:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -5.00,
+            "upper_percent": 5.00,
+            "lower_absolute": 5320000,
+            "upper_absolute": 5880000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Metro Line 9 Connectivity",
+                    "impact_percent": 15.3
+                },
+                {
+                    "factor": "PMAY Eligibility",
+                    "impact_percent": 8.7
+                },
+                {
+                    "factor": "Builder Confidence (High)",
+                    "impact_percent": 8.0
+                },
+                {
+                    "factor": "Affordable Housing Demand",
+                    "impact_percent": 6.9
+                },
+                {
+                    "factor": "Family-Friendly Society",
+                    "impact_percent": 4.5
+                }
+            ]
+        },
+        "motivated_sale": false
+    },
+    {
+        "id": "BLR-008",
+        "title": "3 BHK Villa with Garden in Sarjapur",
+        "city": "Bengaluru",
+        "locality": "Sarjapur Road",
+        "sqft": 2100,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "owner_price": 15000000,
+        "bidmetric_price": 14000000,
+        "market_price": 14100000,
+        "lastSaleComparable_price": 13900000,
+        "builder": "Prestige Group",
+        "builder_confidence_score": 80,
+        "confidence_interval": 5.9,
+        "listed_timestamp": "2026-01-28T14:00:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -5.00,
+            "upper_percent": 5.00,
+            "lower_absolute": 13300000,
+            "upper_absolute": 14700000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Independent Villa Premium",
+                    "impact_percent": 18.5
+                },
+                {
+                    "factor": "Garden & Parking Space",
+                    "impact_percent": 12.3
+                },
+                {
+                    "factor": "Gated Community Security",
+                    "impact_percent": 9.7
+                },
+                {
+                    "factor": "Builder Premium (High)",
+                    "impact_percent": 7.8
+                },
+                {
+                    "factor": "Sarjapur Growth Corridor",
+                    "impact_percent": 6.4
+                }
+            ]
+        },
+        "motivated_sale": false
+    },
+    {
+        "id": "NCR-009",
+        "title": "2 BHK Affordable in Greater Noida West",
+        "city": "NCR",
+        "locality": "Greater Noida West",
+        "sqft": 920,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "owner_price": 4850000,
+        "bidmetric_price": 4550000,
+        "market_price": 4600000,
+        "lastSaleComparable_price": 4500000,
+        "builder": "Shapoorji Pallonji",
+        "builder_confidence_score": 75,
+        "confidence_interval": 7.2,
+        "listed_timestamp": "2026-02-10T09:00:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -5.00,
+            "upper_percent": 5.00,
+            "lower_absolute": 4322500,
+            "upper_absolute": 4777500
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Under-Construction Discount",
+                    "impact_percent": -8.5
+                },
+                {
+                    "factor": "Affordable Housing Segment",
+                    "impact_percent": 10.2
+                },
+                {
+                    "factor": "Builder Legacy (Medium)",
+                    "impact_percent": 5.8
+                },
+                {
+                    "factor": "NCR Expansion Zone",
+                    "impact_percent": 7.3
+                },
+                {
+                    "factor": "12-Month Possession",
+                    "impact_percent": 4.9
+                }
+            ]
+        },
+        "motivated_sale": false
+    },
+    {
+        "id": "MUM-010",
+        "title": "4 BHK Penthouse in Thane West",
+        "city": "Mumbai",
+        "locality": "Thane West",
+        "sqft": 2200,
+        "bedrooms": 4,
+        "bathrooms": 4,
+        "owner_price": 18500000,
+        "bidmetric_price": 17000000,
+        "market_price": 17100000,
+        "lastSaleComparable_price": 16900000,
+        "builder": "Lodha Group",
+        "builder_confidence_score": 85,
+        "confidence_interval": 4.5,
+        "listed_timestamp": "2026-02-03T11:30:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -5.00,
+            "upper_percent": 5.00,
+            "lower_absolute": 16150000,
+            "upper_absolute": 17850000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Penthouse Premium",
+                    "impact_percent": 22.7
+                },
+                {
+                    "factor": "360° Views & Terrace",
+                    "impact_percent": 14.8
+                },
+                {
+                    "factor": "Builder Confidence (High)",
+                    "impact_percent": 8.6
+                },
+                {
+                    "factor": "Thane Infrastructure",
+                    "impact_percent": 7.2
+                },
+                {
+                    "factor": "Luxury Amenities",
+                    "impact_percent": 6.3
+                }
+            ]
+        },
+        "motivated_sale": false
+    },
+    {
+        "id": "HYD-011",
+        "title": "2 BHK in IT Corridor, Kondapur",
+        "city": "Hyderabad",
+        "locality": "Kondapur",
+        "sqft": 1050,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "owner_price": 6300000,
+        "bidmetric_price": 6657000,
+        "market_price": 6650000,
+        "lastSaleComparable_price": 6600000,
+        "builder": "Runwal Developers",
+        "builder_confidence_score": 72,
+        "confidence_interval": 6.4,
+        "listed_timestamp": "2026-01-18T10:00:00Z",
+        "owner_timer_expiry": "2026-04-03T10:00:00Z",
+        "slider_bounds": {
+            "lower_percent": -5.37,
+            "upper_percent": 5.00,
+            "lower_absolute": 6300000,
+            "upper_absolute": 6989850
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "IT Corridor Growth",
+                    "impact_percent": 12.8
+                },
+                {
+                    "factor": "Immediate Possession",
+                    "impact_percent": 9.5
+                },
+                {
+                    "factor": "Builder Confidence (Medium)",
+                    "impact_percent": 5.2
+                },
+                {
+                    "factor": "Tech Park Proximity",
+                    "impact_percent": 7.7
+                },
+                {
+                    "factor": "Infrastructure Score",
+                    "impact_percent": 4.6
+                }
+            ]
+        },
+        "motivated_sale": true,
+        "motivated_sale_label": "Owner relocated to USA — listing valid for 75 days"
+    },
+    {
+        "id": "PUNE-012",
+        "title": "3 BHK Luxury Apartment in EON Free Zone",
+        "city": "Pune",
+        "locality": "Kharadi",
+        "sqft": 1600,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "owner_price": 12500000,
+        "bidmetric_price": 11400000,
+        "market_price": 11500000,
+        "lastSaleComparable_price": 11350000,
+        "builder": "Independent Builders",
+        "builder_confidence_score": 52,
+        "confidence_interval": 8.1,
+        "listed_timestamp": "2026-02-07T13:00:00Z",
+        "owner_timer_expiry": null,
+        "slider_bounds": {
+            "lower_percent": -5.00,
+            "upper_percent": 5.00,
+            "lower_absolute": 10830000,
+            "upper_absolute": 11970000
+        },
+        "valuation": {
+            "top5_factors": [
+                {
+                    "factor": "Luxury Amenities",
+                    "impact_percent": 11.3
+                },
+                {
+                    "factor": "EON IT Park Adjacent",
+                    "impact_percent": 9.8
+                },
+                {
+                    "factor": "Rooftop Swimming Pool",
+                    "impact_percent": 6.5
+                },
+                {
+                    "factor": "Builder Confidence (Low)",
+                    "impact_percent": -12.8
+                },
+                {
+                    "factor": "Kharadi Development",
+                    "impact_percent": 5.4
+                }
+            ]
+        },
+        "motivated_sale": false
+    }
+]

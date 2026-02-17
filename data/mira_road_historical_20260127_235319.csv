@@ -1,0 +1,111 @@
+area_name,zone,rate_per_sqft,date,data_source
+Thakur Village,Kashimira,7743,2026-01-27,synthetic_historical
+Thakur Village,Kashimira,7463,2025-07-31,synthetic_historical
+Thakur Village,Kashimira,7194,2025-02-01,synthetic_historical
+Thakur Village,Kashimira,6935,2024-08-05,synthetic_historical
+Thakur Village,Kashimira,6685,2024-02-07,synthetic_historical
+Thakur Village,Kashimira,6444,2023-08-11,synthetic_historical
+Thakur Village,Kashimira,6211,2023-02-12,synthetic_historical
+Thakur Village,Kashimira,5988,2022-08-16,synthetic_historical
+Thakur Village,Kashimira,5772,2022-02-17,synthetic_historical
+Thakur Village,Kashimira,5564,2021-08-21,synthetic_historical
+Thakur Village,Kashimira,5363,2021-02-22,synthetic_historical
+Maxus Mall Residency,Kashimira,8467,2026-01-27,synthetic_historical
+Maxus Mall Residency,Kashimira,8318,2025-07-31,synthetic_historical
+Maxus Mall Residency,Kashimira,8172,2025-02-01,synthetic_historical
+Maxus Mall Residency,Kashimira,8029,2024-08-05,synthetic_historical
+Maxus Mall Residency,Kashimira,7888,2024-02-07,synthetic_historical
+Maxus Mall Residency,Kashimira,7750,2023-08-11,synthetic_historical
+Maxus Mall Residency,Kashimira,7614,2023-02-12,synthetic_historical
+Maxus Mall Residency,Kashimira,7481,2022-08-16,synthetic_historical
+Maxus Mall Residency,Kashimira,7350,2022-02-17,synthetic_historical
+Maxus Mall Residency,Kashimira,7221,2021-08-21,synthetic_historical
+Maxus Mall Residency,Kashimira,7094,2021-02-22,synthetic_historical
+Acme Ozone,Mira Road West,7622,2026-01-27,synthetic_historical
+Acme Ozone,Mira Road West,7366,2025-07-31,synthetic_historical
+Acme Ozone,Mira Road West,7119,2025-02-01,synthetic_historical
+Acme Ozone,Mira Road West,6880,2024-08-05,synthetic_historical
+Acme Ozone,Mira Road West,6649,2024-02-07,synthetic_historical
+Acme Ozone,Mira Road West,6426,2023-08-11,synthetic_historical
+Acme Ozone,Mira Road West,6211,2023-02-12,synthetic_historical
+Acme Ozone,Mira Road West,6003,2022-08-16,synthetic_historical
+Acme Ozone,Mira Road West,5801,2022-02-17,synthetic_historical
+Acme Ozone,Mira Road West,5607,2021-08-21,synthetic_historical
+Acme Ozone,Mira Road West,5419,2021-02-22,synthetic_historical
+Sheetal Tapovan,Mira Road West,10115,2026-01-27,synthetic_historical
+Sheetal Tapovan,Mira Road West,9838,2025-07-31,synthetic_historical
+Sheetal Tapovan,Mira Road West,9569,2025-02-01,synthetic_historical
+Sheetal Tapovan,Mira Road West,9307,2024-08-05,synthetic_historical
+Sheetal Tapovan,Mira Road West,9053,2024-02-07,synthetic_historical
+Sheetal Tapovan,Mira Road West,8805,2023-08-11,synthetic_historical
+Sheetal Tapovan,Mira Road West,8565,2023-02-12,synthetic_historical
+Sheetal Tapovan,Mira Road West,8331,2022-08-16,synthetic_historical
+Sheetal Tapovan,Mira Road West,8103,2022-02-17,synthetic_historical
+Sheetal Tapovan,Mira Road West,7881,2021-08-21,synthetic_historical
+Sheetal Tapovan,Mira Road West,7666,2021-02-22,synthetic_historical
+Thakur Village,Kashimira,7731,2026-01-27,synthetic_historical
+Thakur Village,Kashimira,7417,2025-07-31,synthetic_historical
+Thakur Village,Kashimira,7116,2025-02-01,synthetic_historical
+Thakur Village,Kashimira,6827,2024-08-05,synthetic_historical
+Thakur Village,Kashimira,6550,2024-02-07,synthetic_historical
+Thakur Village,Kashimira,6284,2023-08-11,synthetic_historical
+Thakur Village,Kashimira,6029,2023-02-12,synthetic_historical
+Thakur Village,Kashimira,5784,2022-08-16,synthetic_historical
+Thakur Village,Kashimira,5549,2022-02-17,synthetic_historical
+Thakur Village,Kashimira,5324,2021-08-21,synthetic_historical
+Thakur Village,Kashimira,5108,2021-02-22,synthetic_historical
+Shree Krishna Towers,Mira Road West,7496,2026-01-27,synthetic_historical
+Shree Krishna Towers,Mira Road West,7191,2025-07-31,synthetic_historical
+Shree Krishna Towers,Mira Road West,6899,2025-02-01,synthetic_historical
+Shree Krishna Towers,Mira Road West,6619,2024-08-05,synthetic_historical
+Shree Krishna Towers,Mira Road West,6351,2024-02-07,synthetic_historical
+Shree Krishna Towers,Mira Road West,6093,2023-08-11,synthetic_historical
+Shree Krishna Towers,Mira Road West,5846,2023-02-12,synthetic_historical
+Shree Krishna Towers,Mira Road West,5608,2022-08-16,synthetic_historical
+Shree Krishna Towers,Mira Road West,5381,2022-02-17,synthetic_historical
+Shree Krishna Towers,Mira Road West,5162,2021-08-21,synthetic_historical
+Shree Krishna Towers,Mira Road West,4953,2021-02-22,synthetic_historical
+Golden Nest,Mira Road West,7074,2026-01-27,synthetic_historical
+Golden Nest,Mira Road West,6789,2025-07-31,synthetic_historical
+Golden Nest,Mira Road West,6516,2025-02-01,synthetic_historical
+Golden Nest,Mira Road West,6254,2024-08-05,synthetic_historical
+Golden Nest,Mira Road West,6002,2024-02-07,synthetic_historical
+Golden Nest,Mira Road West,5760,2023-08-11,synthetic_historical
+Golden Nest,Mira Road West,5529,2023-02-12,synthetic_historical
+Golden Nest,Mira Road West,5306,2022-08-16,synthetic_historical
+Golden Nest,Mira Road West,5093,2022-02-17,synthetic_historical
+Golden Nest,Mira Road West,4888,2021-08-21,synthetic_historical
+Golden Nest,Mira Road West,4691,2021-02-22,synthetic_historical
+Kanakia Paris,Mira Road West,9949,2026-01-27,synthetic_historical
+Kanakia Paris,Mira Road West,9656,2025-07-31,synthetic_historical
+Kanakia Paris,Mira Road West,9373,2025-02-01,synthetic_historical
+Kanakia Paris,Mira Road West,9098,2024-08-05,synthetic_historical
+Kanakia Paris,Mira Road West,8831,2024-02-07,synthetic_historical
+Kanakia Paris,Mira Road West,8571,2023-08-11,synthetic_historical
+Kanakia Paris,Mira Road West,8320,2023-02-12,synthetic_historical
+Kanakia Paris,Mira Road West,8076,2022-08-16,synthetic_historical
+Kanakia Paris,Mira Road West,7839,2022-02-17,synthetic_historical
+Kanakia Paris,Mira Road West,7608,2021-08-21,synthetic_historical
+Kanakia Paris,Mira Road West,7385,2021-02-22,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,8966,2026-01-27,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,8711,2025-07-31,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,8463,2025-02-01,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,8222,2024-08-05,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,7988,2024-02-07,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,7761,2023-08-11,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,7540,2023-02-12,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,7326,2022-08-16,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,7118,2022-02-17,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,6915,2021-08-21,synthetic_historical
+Sheetal Tapovan,Mira Bhayandar,6718,2021-02-22,synthetic_historical
+Lodha Splendora,Mira Road East,7493,2026-01-27,synthetic_historical
+Lodha Splendora,Mira Road East,7380,2025-07-31,synthetic_historical
+Lodha Splendora,Mira Road East,7269,2025-02-01,synthetic_historical
+Lodha Splendora,Mira Road East,7159,2024-08-05,synthetic_historical
+Lodha Splendora,Mira Road East,7051,2024-02-07,synthetic_historical
+Lodha Splendora,Mira Road East,6945,2023-08-11,synthetic_historical
+Lodha Splendora,Mira Road East,6841,2023-02-12,synthetic_historical
+Lodha Splendora,Mira Road East,6738,2022-08-16,synthetic_historical
+Lodha Splendora,Mira Road East,6636,2022-02-17,synthetic_historical
+Lodha Splendora,Mira Road East,6536,2021-08-21,synthetic_historical
+Lodha Splendora,Mira Road East,6438,2021-02-22,synthetic_historical

@@ -1,0 +1,111 @@
+area_name,zone,rate_per_sqft,date,data_source
+Runwal Gardens,Mira Bhayandar,6769,2026-01-27,synthetic_historical
+Runwal Gardens,Mira Bhayandar,6669,2025-07-31,synthetic_historical
+Runwal Gardens,Mira Bhayandar,6570,2025-02-01,synthetic_historical
+Runwal Gardens,Mira Bhayandar,6473,2024-08-05,synthetic_historical
+Runwal Gardens,Mira Bhayandar,6377,2024-02-07,synthetic_historical
+Runwal Gardens,Mira Bhayandar,6283,2023-08-11,synthetic_historical
+Runwal Gardens,Mira Bhayandar,6190,2023-02-12,synthetic_historical
+Runwal Gardens,Mira Bhayandar,6099,2022-08-16,synthetic_historical
+Runwal Gardens,Mira Bhayandar,6009,2022-02-17,synthetic_historical
+Runwal Gardens,Mira Bhayandar,5920,2021-08-21,synthetic_historical
+Runwal Gardens,Mira Bhayandar,5833,2021-02-22,synthetic_historical
+Sai Sarang,Mira Road East,9006,2026-01-27,synthetic_historical
+Sai Sarang,Mira Road East,8855,2025-07-31,synthetic_historical
+Sai Sarang,Mira Road East,8708,2025-02-01,synthetic_historical
+Sai Sarang,Mira Road East,8562,2024-08-05,synthetic_historical
+Sai Sarang,Mira Road East,8420,2024-02-07,synthetic_historical
+Sai Sarang,Mira Road East,8279,2023-08-11,synthetic_historical
+Sai Sarang,Mira Road East,8141,2023-02-12,synthetic_historical
+Sai Sarang,Mira Road East,8006,2022-08-16,synthetic_historical
+Sai Sarang,Mira Road East,7872,2022-02-17,synthetic_historical
+Sai Sarang,Mira Road East,7741,2021-08-21,synthetic_historical
+Sai Sarang,Mira Road East,7612,2021-02-22,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,6622,2026-01-27,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,6472,2025-07-31,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,6327,2025-02-01,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,6184,2024-08-05,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,6045,2024-02-07,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,5909,2023-08-11,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,5776,2023-02-12,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,5646,2022-08-16,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,5519,2022-02-17,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,5394,2021-08-21,synthetic_historical
+Shree Krishna Towers,Mira Bhayandar,5273,2021-02-22,synthetic_historical
+Haware Citi,Kashimira,8379,2026-01-27,synthetic_historical
+Haware Citi,Kashimira,8234,2025-07-31,synthetic_historical
+Haware Citi,Kashimira,8092,2025-02-01,synthetic_historical
+Haware Citi,Kashimira,7952,2024-08-05,synthetic_historical
+Haware Citi,Kashimira,7815,2024-02-07,synthetic_historical
+Haware Citi,Kashimira,7681,2023-08-11,synthetic_historical
+Haware Citi,Kashimira,7548,2023-02-12,synthetic_historical
+Haware Citi,Kashimira,7418,2022-08-16,synthetic_historical
+Haware Citi,Kashimira,7290,2022-02-17,synthetic_historical
+Haware Citi,Kashimira,7164,2021-08-21,synthetic_historical
+Haware Citi,Kashimira,7041,2021-02-22,synthetic_historical
+Lodha Splendora,Mira Bhayandar,6403,2026-01-27,synthetic_historical
+Lodha Splendora,Mira Bhayandar,6196,2025-07-31,synthetic_historical
+Lodha Splendora,Mira Bhayandar,5996,2025-02-01,synthetic_historical
+Lodha Splendora,Mira Bhayandar,5802,2024-08-05,synthetic_historical
+Lodha Splendora,Mira Bhayandar,5615,2024-02-07,synthetic_historical
+Lodha Splendora,Mira Bhayandar,5434,2023-08-11,synthetic_historical
+Lodha Splendora,Mira Bhayandar,5259,2023-02-12,synthetic_historical
+Lodha Splendora,Mira Bhayandar,5089,2022-08-16,synthetic_historical
+Lodha Splendora,Mira Bhayandar,4925,2022-02-17,synthetic_historical
+Lodha Splendora,Mira Bhayandar,4766,2021-08-21,synthetic_historical
+Lodha Splendora,Mira Bhayandar,4612,2021-02-22,synthetic_historical
+Golden Nest,Mira Road East,7394,2026-01-27,synthetic_historical
+Golden Nest,Mira Road East,7243,2025-07-31,synthetic_historical
+Golden Nest,Mira Road East,7095,2025-02-01,synthetic_historical
+Golden Nest,Mira Road East,6951,2024-08-05,synthetic_historical
+Golden Nest,Mira Road East,6809,2024-02-07,synthetic_historical
+Golden Nest,Mira Road East,6671,2023-08-11,synthetic_historical
+Golden Nest,Mira Road East,6535,2023-02-12,synthetic_historical
+Golden Nest,Mira Road East,6402,2022-08-16,synthetic_historical
+Golden Nest,Mira Road East,6272,2022-02-17,synthetic_historical
+Golden Nest,Mira Road East,6144,2021-08-21,synthetic_historical
+Golden Nest,Mira Road East,6019,2021-02-22,synthetic_historical
+Acme Ozone,Kashimira,6808,2026-01-27,synthetic_historical
+Acme Ozone,Kashimira,6562,2025-07-31,synthetic_historical
+Acme Ozone,Kashimira,6325,2025-02-01,synthetic_historical
+Acme Ozone,Kashimira,6097,2024-08-05,synthetic_historical
+Acme Ozone,Kashimira,5878,2024-02-07,synthetic_historical
+Acme Ozone,Kashimira,5666,2023-08-11,synthetic_historical
+Acme Ozone,Kashimira,5461,2023-02-12,synthetic_historical
+Acme Ozone,Kashimira,5264,2022-08-16,synthetic_historical
+Acme Ozone,Kashimira,5075,2022-02-17,synthetic_historical
+Acme Ozone,Kashimira,4892,2021-08-21,synthetic_historical
+Acme Ozone,Kashimira,4715,2021-02-22,synthetic_historical
+Rustomjee Urbania,Kashimira,7875,2026-01-27,synthetic_historical
+Rustomjee Urbania,Kashimira,7663,2025-07-31,synthetic_historical
+Rustomjee Urbania,Kashimira,7457,2025-02-01,synthetic_historical
+Rustomjee Urbania,Kashimira,7256,2024-08-05,synthetic_historical
+Rustomjee Urbania,Kashimira,7061,2024-02-07,synthetic_historical
+Rustomjee Urbania,Kashimira,6872,2023-08-11,synthetic_historical
+Rustomjee Urbania,Kashimira,6687,2023-02-12,synthetic_historical
+Rustomjee Urbania,Kashimira,6507,2022-08-16,synthetic_historical
+Rustomjee Urbania,Kashimira,6332,2022-02-17,synthetic_historical
+Rustomjee Urbania,Kashimira,6162,2021-08-21,synthetic_historical
+Rustomjee Urbania,Kashimira,5996,2021-02-22,synthetic_historical
+Haware Citi,Mira Road East,7809,2026-01-27,synthetic_historical
+Haware Citi,Mira Road East,7555,2025-07-31,synthetic_historical
+Haware Citi,Mira Road East,7310,2025-02-01,synthetic_historical
+Haware Citi,Mira Road East,7073,2024-08-05,synthetic_historical
+Haware Citi,Mira Road East,6843,2024-02-07,synthetic_historical
+Haware Citi,Mira Road East,6621,2023-08-11,synthetic_historical
+Haware Citi,Mira Road East,6406,2023-02-12,synthetic_historical
+Haware Citi,Mira Road East,6198,2022-08-16,synthetic_historical
+Haware Citi,Mira Road East,5997,2022-02-17,synthetic_historical
+Haware Citi,Mira Road East,5803,2021-08-21,synthetic_historical
+Haware Citi,Mira Road East,5614,2021-02-22,synthetic_historical
+Acme Ozone,Mira Road West,7692,2026-01-27,synthetic_historical
+Acme Ozone,Mira Road West,7533,2025-07-31,synthetic_historical
+Acme Ozone,Mira Road West,7377,2025-02-01,synthetic_historical
+Acme Ozone,Mira Road West,7225,2024-08-05,synthetic_historical
+Acme Ozone,Mira Road West,7076,2024-02-07,synthetic_historical
+Acme Ozone,Mira Road West,6930,2023-08-11,synthetic_historical
+Acme Ozone,Mira Road West,6787,2023-02-12,synthetic_historical
+Acme Ozone,Mira Road West,6647,2022-08-16,synthetic_historical
+Acme Ozone,Mira Road West,6509,2022-02-17,synthetic_historical
+Acme Ozone,Mira Road West,6375,2021-08-21,synthetic_historical
+Acme Ozone,Mira Road West,6243,2021-02-22,synthetic_historical
