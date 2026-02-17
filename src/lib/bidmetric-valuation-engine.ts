@@ -136,10 +136,10 @@ export function calculateBuilderConfidence(builder: Partial<BuilderProfile>): {
 
     if (score >= 80) {
         level = 'high'
-        priceMultiplier = 1.08  // +8% premium
+        priceMultiplier = 1.055  // +5.5% premium (Tier 1)
     } else if (score >= 60) {
         level = 'medium'
-        priceMultiplier = 1.0   // neutral
+        priceMultiplier = 1.025   // +2.5% premium (Tier 2)
     } else {
         level = 'low'
         priceMultiplier = 0.95  // -5% discount
@@ -171,29 +171,35 @@ export function calculateAIValuation(params: {
 
     // Get locality factors (HPI, infrastructure, etc.)
     const localityFactors = getLocalityFactors(location)
-    const effectiveGrowthRate = calculateEffectiveGrowthRate(localityFactors)
 
-    // Base price from market
+    // Base price from market (pure sqft × local area base rate)
     const basePrice = sqft * localityAvgPricePerSqft
 
     // Calculate builder confidence
     const builderConfidence = calculateBuilderConfidence(builderProfile ?? {})
 
-    // Market multiplier from locality factors
-    const infraBoost = (localityFactors.infrastructureScore - 60) * 0.001  // 0.1% per point above 60
-    const projectBoost = localityFactors.upcomingProjectsBoost / 100
-    const marketMultiplier = (1 + infraBoost) * (1 + projectBoost)
+    /**
+     * Refined Logic as per User Request:
+     * - Infrastructure score > 60: 1-2% boost
+     * - Market Trend (HPI): 2-3% boost
+     * - Good scope of upcoming projects: 4-5% boost
+     */
+    const infraBoost = localityFactors.infrastructureScore > 60 ? 0.015 : 0 // 1.5% boost
+    const hpiBoost = localityFactors.hpiGrowthRate > 0 ? 0.025 : 0 // 2.5% boost
+    const projectBoost = localityFactors.upcomingProjectsBoost > 0 ? 0.045 : 0 // 4.5% boost
+
+    const totalMultiplier = (1 + infraBoost) * (1 + hpiBoost) * (1 + projectBoost)
 
     // Apply all multipliers
     const aiValuation = Math.round(
-        basePrice * marketMultiplier * builderConfidence.priceMultiplier
+        basePrice * totalMultiplier * builderConfidence.priceMultiplier
     )
 
     // Calculate factor impacts
     const infraImpact = basePrice * infraBoost
+    const hpiImpact = basePrice * hpiBoost
     const projectImpact = basePrice * projectBoost
     const builderImpact = basePrice * (builderConfidence.priceMultiplier - 1)
-    const hpiImpact = basePrice * (localityFactors.hpiGrowthRate / 100)
 
     const factors: ValuationFactor[] = [
         {
@@ -203,7 +209,7 @@ export function calculateAIValuation(params: {
             direction: 'positive' as const
         },
         {
-            factor: `Builder ${builderConfidence.level === 'high' ? 'Premium' : builderConfidence.level === 'low' ? 'Discount' : 'Neutral'} (${builderConfidence.level})`,
+            factor: `Builder ${builderConfidence.level.toUpperCase()} (${builderConfidence.score}/100)`,
             impact: builderImpact,
             percentage: (builderImpact / aiValuation) * 100,
             direction: (builderImpact >= 0 ? 'positive' : 'negative') as 'positive' | 'negative'
@@ -215,13 +221,13 @@ export function calculateAIValuation(params: {
             direction: 'positive' as const
         },
         {
-            factor: `Upcoming Projects (+${localityFactors.upcomingProjectsBoost}%)`,
+            factor: `Upcoming Projects Boost`,
             impact: projectImpact,
             percentage: (projectImpact / aiValuation) * 100,
             direction: 'positive' as const
         },
         {
-            factor: `Location Base Price (₹${localityAvgPricePerSqft}/sqft)`,
+            factor: `Area Base Price (₹${localityAvgPricePerSqft}/sqft)`,
             impact: basePrice,
             percentage: (basePrice / aiValuation) * 100,
             direction: 'positive' as const

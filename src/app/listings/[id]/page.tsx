@@ -91,13 +91,15 @@ export default function PropertyDetailsPage() {
             setProperty(propData)
 
             if (propData) {
-                const basePrice = propData.bidmetric_price / propData.sqft || 8000;
+                // Use the Area Base Rate (Market Price) to drive the engine
+                const areaBaseRate = (propData.market_price / propData.sqft) || 8000;
+
                 const mockTrends = [
-                    { date: '2025-01-01', avg_price_per_sqft: basePrice * 0.92 },
-                    { date: '2025-04-01', avg_price_per_sqft: basePrice * 0.94 },
-                    { date: '2025-07-01', avg_price_per_sqft: basePrice * 0.96 },
-                    { date: '2025-10-01', avg_price_per_sqft: basePrice * 0.98 },
-                    { date: '2026-01-01', avg_price_per_sqft: basePrice * 1.0 },
+                    { date: '2025-01-01', avg_price_per_sqft: areaBaseRate * 0.92 },
+                    { date: '2025-04-01', avg_price_per_sqft: areaBaseRate * 0.94 },
+                    { date: '2025-07-01', avg_price_per_sqft: areaBaseRate * 0.96 },
+                    { date: '2025-10-01', avg_price_per_sqft: areaBaseRate * 0.98 },
+                    { date: '2026-01-01', avg_price_per_sqft: areaBaseRate * 1.0 },
                 ]
                 setTrends(mockTrends)
 
@@ -105,7 +107,7 @@ export default function PropertyDetailsPage() {
                     propertyId: propData.id,
                     sqft: propData.sqft,
                     location: propData.location,
-                    localityAvgPricePerSqft: basePrice,
+                    localityAvgPricePerSqft: areaBaseRate,
                     ownerListedPrice: propData.original_listing_price || propData.price,
                     builderProfile: {
                         name: propData.builder || 'Unknown Builder',
@@ -118,8 +120,8 @@ export default function PropertyDetailsPage() {
                 })
                 setValuation(valuationData)
 
-                // Initialize slider at AI Price
-                setSliderValue(propData.bidmetric_price)
+                // Initialize slider at the AI Calculated Price
+                setSliderValue(valuationData.aiValuation)
             }
             setIsLoading(false)
         }
@@ -137,10 +139,9 @@ export default function PropertyDetailsPage() {
         return () => { supabase.removeChannel(channel) }
     }, [id, supabase])
 
-    // DERIVED LOGIC FOR RANGE
     const ownerPrice = property?.original_listing_price || property?.price || 0
-    const marketPrice = property?.market_price || property?.bidmetric_price || 0
-    const aiPrice = property?.bidmetric_price || 0
+    const marketPrice = property?.market_price || valuation?.marketPrice || 0
+    const aiPrice = valuation?.aiValuation || property?.bidmetric_price || 0
 
     // Bounds Calculation based on User's Rules
     let minAllowed = 0
