@@ -7,9 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const body = await request.json()
@@ -36,7 +37,7 @@ export async function POST(
         const { data: agent } = await supabase
             .from('agents')
             .select('id')
-            .eq('id', params.id)
+            .eq('id', id)
             .single()
 
         if (!agent) {
@@ -50,7 +51,7 @@ export async function POST(
         const { data: listing, error } = await supabase
             .from('agent_listings')
             .insert({
-                agent_id: params.id,
+                agent_id: id,
                 title,
                 description,
                 price,
@@ -71,7 +72,7 @@ export async function POST(
             .from('analytics_events')
             .insert({
                 event_type: 'listing_created',
-                agent_id: params.id,
+                agent_id: id,
                 listing_id: listing.id,
                 event_data: {
                     price,
@@ -101,15 +102,16 @@ export async function POST(
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const { data: listings, error } = await supabase
             .from('agent_listings')
             .select('*')
-            .eq('agent_id', params.id)
+            .eq('agent_id', id)
             .eq('status', 'active')
             .order('is_boosted', { ascending: false })
             .order('created_at', { ascending: false })

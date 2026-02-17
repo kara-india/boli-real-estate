@@ -7,16 +7,17 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         // Get agent info
         const { data: agent, error: agentError } = await supabase
             .from('agents')
             .select('*')
-            .eq('id', params.id)
+            .eq('id', id)
             .single()
 
         if (agentError || !agent) {
@@ -30,7 +31,7 @@ export async function GET(
         const { data: listings } = await supabase
             .from('agent_listings')
             .select('*')
-            .eq('agent_id', params.id)
+            .eq('agent_id', id)
             .order('created_at', { ascending: false })
 
         // Get buyer requests
@@ -49,7 +50,7 @@ export async function GET(
         created_at,
         agent_listings (title, location)
       `)
-            .eq('agent_id', params.id)
+            .eq('agent_id', id)
             .order('created_at', { ascending: false })
             .limit(50)
 
@@ -63,7 +64,7 @@ export async function GET(
         price_paid,
         agent_listings (title)
       `)
-            .eq('agent_id', params.id)
+            .eq('agent_id', id)
             .eq('status', 'active')
             .gte('end_at', new Date().toISOString())
 
@@ -71,7 +72,7 @@ export async function GET(
         const { data: shareEvents } = await supabase
             .from('share_events')
             .select('*')
-            .eq('agent_id', params.id)
+            .eq('agent_id', id)
             .order('created_at', { ascending: false })
             .limit(20)
 
@@ -86,12 +87,12 @@ export async function GET(
         // Get this week's stats
         const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
         const thisWeekRequests = requests?.filter(r => r.created_at >= oneWeekAgo).length || 0
-        const thisWeekViews = await getThisWeekViews(supabase, params.id, oneWeekAgo)
+        const thisWeekViews = await getThisWeekViews(supabase, id, oneWeekAgo)
 
         // Check boost eligibility
         const { data: boostEligibility } = await supabase
             .rpc('check_boost_promo_eligibility', {
-                p_agent_id: params.id,
+                p_agent_id: id,
                 p_promo_name: 'launch_offer'
             })
 

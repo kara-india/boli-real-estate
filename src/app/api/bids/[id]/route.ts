@@ -7,9 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const body = await request.json()
@@ -25,7 +26,7 @@ export async function POST(
         // Call database function to accept bid
         const { data, error } = await supabase
             .rpc('accept_bid', {
-                p_bid_id: params.id,
+                p_bid_id: id,
                 p_seller_id: seller_id
             })
 
@@ -68,9 +69,10 @@ export async function POST(
  */
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const body = await request.json()
@@ -82,7 +84,7 @@ export async function DELETE(
             .update({
                 status: 'rejected'
             })
-            .eq('id', params.id)
+            .eq('id', id)
 
         if (error) throw error
 
@@ -92,7 +94,7 @@ export async function DELETE(
             .insert({
                 event_type: 'bid_rejected',
                 user_id: seller_id,
-                bid_id: params.id,
+                bid_id: id,
                 metadata: {
                     reason: reason || 'No reason provided'
                 }

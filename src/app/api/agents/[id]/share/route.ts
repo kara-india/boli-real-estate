@@ -7,9 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const body = await request.json()
@@ -27,7 +28,7 @@ export async function POST(
         const { data: shareEvent, error } = await supabase
             .from('share_events')
             .insert({
-                agent_id: params.id,
+                agent_id: id,
                 listing_id: listing_id || null,
                 channel,
                 short_link: short_link || null
@@ -42,7 +43,7 @@ export async function POST(
             .from('analytics_events')
             .insert({
                 event_type: 'agent_page_shared',
-                agent_id: params.id,
+                agent_id: id,
                 listing_id: listing_id || null,
                 event_data: {
                     channel,
@@ -53,7 +54,7 @@ export async function POST(
         return NextResponse.json({
             share_id: shareEvent.id,
             message: 'Share tracked successfully',
-            whatsapp_message: generateWhatsAppMessage(params.id, channel)
+            whatsapp_message: generateWhatsAppMessage(id, channel)
         }, { status: 201 })
 
     } catch (error) {
@@ -71,16 +72,17 @@ export async function POST(
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         // Get agent info
         const { data: agent, error } = await supabase
             .from('agents')
             .select('name, slug')
-            .eq('id', params.id)
+            .eq('id', id)
             .single()
 
         if (error || !agent) {

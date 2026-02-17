@@ -7,9 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         // Fetch property with all valuation data
@@ -17,16 +18,10 @@ export async function GET(
             .from('properties')
             .select(`
         *,
-        builder_profiles (
-          name,
-          confidence_score,
-          confidence_level,
-          rera_registered,
-          on_time_delivery_rate,
-          avg_customer_rating
+          average_rating
         )
       `)
-            .eq('id', params.id)
+            .eq('id', id)
             .single()
 
         if (error) throw error
@@ -41,7 +36,7 @@ export async function GET(
         const { data: valuation } = await supabase
             .from('valuations')
             .select('*')
-            .eq('property_id', params.id)
+            .eq('property_id', id)
             .order('valuation_timestamp', { ascending: false })
             .limit(1)
             .single()

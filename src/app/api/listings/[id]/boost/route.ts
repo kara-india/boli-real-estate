@@ -7,9 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const body = await request.json()
@@ -32,7 +33,7 @@ export async function POST(
         const { data: listing, error: listingError } = await supabase
             .from('agent_listings')
             .select('id, agent_id, title')
-            .eq('id', params.id)
+            .eq('id', id)
             .single()
 
         if (listingError || !listing) {
@@ -52,7 +53,7 @@ export async function POST(
         // Call database function to create boost
         const { data, error } = await supabase
             .rpc('create_boost_purchase', {
-                p_listing_id: params.id,
+                p_listing_id: id,
                 p_agent_id: agent_id,
                 p_promo_name: promo_name,
                 p_payment_id: payment_id,
@@ -103,9 +104,13 @@ export async function POST(
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    // We don't actually use params.id in this GET handler based on previous code, 
+    // but we must await it to satisfy Next.js types.
+    await params
+
     const searchParams = request.nextUrl.searchParams
     const agentId = searchParams.get('agent_id')
     const promoName = searchParams.get('promo_name') || 'launch_offer'

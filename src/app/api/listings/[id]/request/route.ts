@@ -7,9 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const body = await request.json()
@@ -38,7 +39,7 @@ export async function POST(
         const { data: listing, error: listingError } = await supabase
             .from('agent_listings')
             .select('id, agent_id, title')
-            .eq('id', params.id)
+            .eq('id', id)
             .single()
 
         if (listingError || !listing) {
@@ -70,7 +71,7 @@ export async function POST(
         const { data: buyerRequest, error } = await supabase
             .from('buyer_requests')
             .insert({
-                listing_id: params.id,
+                listing_id: id,
                 agent_id: listing.agent_id,
                 buyer_name,
                 buyer_phone,
@@ -95,7 +96,7 @@ export async function POST(
             .insert({
                 event_type: 'buyer_request_submitted',
                 agent_id: listing.agent_id,
-                listing_id: params.id,
+                listing_id: id,
                 request_id: buyerRequest.id,
                 ip_address: clientIp,
                 event_data: {

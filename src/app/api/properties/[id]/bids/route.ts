@@ -7,9 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const body = await request.json()
@@ -26,7 +27,7 @@ export async function POST(
         const { data: property, error: propError } = await supabase
             .from('properties')
             .select('slider_lower_bound, slider_upper_bound, status')
-            .eq('id', params.id)
+            .eq('id', id)
             .single()
 
         if (propError || !property) {
@@ -68,7 +69,7 @@ export async function POST(
         const { data: highestBid } = await supabase
             .from('bids')
             .select('amount')
-            .eq('property_id', params.id)
+            .eq('property_id', id)
             .eq('status', 'placed')
             .order('amount', { ascending: false })
             .limit(1)
@@ -91,7 +92,7 @@ export async function POST(
         const { data: bid, error: bidError } = await supabase
             .from('bids')
             .insert({
-                property_id: params.id,
+                property_id: id,
                 user_id: user_id,
                 amount: bid_amount,
                 status: 'placed',
@@ -108,7 +109,7 @@ export async function POST(
             .insert({
                 event_type: 'bid_placed',
                 user_id: user_id,
-                property_id: params.id,
+                property_id: id,
                 bid_id: bid.id,
                 metadata: {
                     bid_amount,
@@ -139,9 +140,10 @@ export async function POST(
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const supabase = await createClient()
+    const { id } = await params
 
     try {
         const { data: bids, error } = await supabase
@@ -159,7 +161,7 @@ export async function GET(
           name
         )
       `)
-            .eq('property_id', params.id)
+            .eq('property_id', id)
             .order('amount', { ascending: false })
 
         if (error) throw error
