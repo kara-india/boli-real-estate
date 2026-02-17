@@ -11,10 +11,7 @@ export const createClient = () => {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookieOptions: {
-                name: 'boli-auth-token',
                 secure: false, // Required for http://localhost
-                sameSite: 'lax',
-                path: '/',
             }
         }
     )
