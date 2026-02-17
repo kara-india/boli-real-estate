@@ -56,7 +56,7 @@ export default function SellerDashboard() {
                 return
             }
 
-            const propertyIds = properties.map(p => p.id)
+            const propertyIds = properties.map((p: { id: string }) => p.id)
 
             // Fetch bids for user's properties
             let query = supabase
@@ -196,8 +196,8 @@ export default function SellerDashboard() {
                             key={f}
                             onClick={() => setFilter(f)}
                             className={`px-6 py-3 text-sm font-semibold transition-colors border-b-2 ${filter === f
-                                    ? 'border-[#D4AF37] text-[#D4AF37]'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                ? 'border-[#D4AF37] text-[#D4AF37]'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             {f.charAt(0).toUpperCase() + f.slice(1)} Bids

@@ -130,7 +130,7 @@ export default function PropertyDetailsPage() {
 
         const channel = supabase.channel('realtime-property')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'properties', filter: `id=eq.${id}` },
-                (payload) => {
+                (payload: { new: { price: number } }) => {
                     setProperty((prev) => prev ? { ...prev, price: payload.new.price } : null)
                     toast.success(`Update: New High Offer ₹${(payload.new.price / 100000).toFixed(2)} L`)
                 })
