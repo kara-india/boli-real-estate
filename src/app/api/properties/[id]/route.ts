@@ -14,15 +14,13 @@ export async function GET(
 
     try {
         // Fetch property with all valuation data
-        const { data: property, error } = await supabase
+        const { data: rawData, error } = await supabase
             .from('properties')
-            .select(`
-        *,
-          average_rating
-        )
-      `)
+            .select('*')
             .eq('id', id)
             .single()
+
+        const property = rawData as any
 
         if (error) throw error
         if (!property) {
@@ -42,7 +40,11 @@ export async function GET(
             .single()
 
         // Calculate days remaining for motivated sales
-        let motivatedSale = {
+        let motivatedSale: {
+            is_motivated: boolean;
+            expires_in_days: number | null;
+            label: string | null;
+        } = {
             is_motivated: false,
             expires_in_days: null,
             label: null

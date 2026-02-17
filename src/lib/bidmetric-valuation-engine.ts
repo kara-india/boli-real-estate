@@ -200,31 +200,31 @@ export function calculateAIValuation(params: {
             factor: `Market Trend (${localityFactors.hpiGrowthRate}% HPI CAGR)`,
             impact: hpiImpact,
             percentage: (hpiImpact / aiValuation) * 100,
-            direction: 'positive'
+            direction: 'positive' as const
         },
         {
             factor: `Builder ${builderConfidence.level === 'high' ? 'Premium' : builderConfidence.level === 'low' ? 'Discount' : 'Neutral'} (${builderConfidence.level})`,
             impact: builderImpact,
             percentage: (builderImpact / aiValuation) * 100,
-            direction: builderImpact >= 0 ? 'positive' : 'negative'
+            direction: (builderImpact >= 0 ? 'positive' : 'negative') as 'positive' | 'negative'
         },
         {
             factor: `Infrastructure Score (${localityFactors.infrastructureScore}/100)`,
             impact: infraImpact,
             percentage: (infraImpact / aiValuation) * 100,
-            direction: 'positive'
+            direction: 'positive' as const
         },
         {
             factor: `Upcoming Projects (+${localityFactors.upcomingProjectsBoost}%)`,
             impact: projectImpact,
             percentage: (projectImpact / aiValuation) * 100,
-            direction: 'positive'
+            direction: 'positive' as const
         },
         {
             factor: `Location Base Price (₹${localityAvgPricePerSqft}/sqft)`,
             impact: basePrice,
             percentage: (basePrice / aiValuation) * 100,
-            direction: 'positive'
+            direction: 'positive' as const
         }
     ].sort((a, b) => Math.abs(b.impact) - Math.abs(a.impact)).slice(0, 5)
 
