@@ -193,109 +193,197 @@ export default function PropertyDetailsPage() {
     if (!property) return <div className="min-h-screen bg-white flex justify-center items-center">Property not found</div>
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-28 pb-12 px-4 sm:px-6 lg:px-8 text-gray-900 font-sans">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="min-h-screen bg-gray-50 pt-20 md:pt-28 pb-24 md:pb-12 px-3 sm:px-4 lg:px-8 text-gray-900 font-sans">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
 
                 {/* LEFT COLUMN: Hero & Visuals */}
-                <div className="lg:col-span-2 space-y-10">
+                <div className="lg:col-span-2 space-y-6 md:space-y-10">
                     {/* Header */}
-                    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-3 md:gap-4">
                         <div>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-gold/5 border border-gold/10 rounded-full text-[10px] font-black uppercase tracking-widest text-gold-dark mb-3">
-                                <Award size={12} /> Institutional Grade Asset
+                            <div className="inline-flex items-center gap-2 px-2.5 md:px-3 py-1 bg-gold/5 border border-gold/10 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gold-dark mb-2 md:mb-3">
+                                <Award size={11} /> Institutional Grade Asset
                             </div>
-                            <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">{property.title}</h1>
-                            <div className="flex items-center text-gray-400 mt-2 font-medium">
-                                <MapPin size={18} className="mr-2 text-gold" />
+                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">{property.title}</h1>
+                            <div className="flex items-center text-gray-400 mt-1.5 md:mt-2 font-medium text-sm md:text-base">
+                                <MapPin size={16} className="mr-1.5 md:mr-2 text-gold" />
                                 {property.location}, {property.city}
                             </div>
                         </div>
                         {isMotivated && (
-                            <div className="bg-white border border-red-100 p-4 rounded-3xl flex items-center shadow-xl shadow-red-500/5">
-                                <div className="w-10 h-10 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 mr-3">
-                                    <Clock size={20} className="animate-pulse" />
+                            <div className="bg-white border border-red-100 p-3 md:p-4 rounded-2xl md:rounded-3xl flex items-center shadow-xl shadow-red-500/5 w-full md:w-auto">
+                                <div className="w-9 h-9 md:w-10 md:h-10 bg-red-50 rounded-xl md:rounded-2xl flex items-center justify-center text-red-500 mr-2.5 md:mr-3">
+                                    <Clock size={18} className="animate-pulse" />
                                 </div>
                                 <div>
-                                    <span className="text-xs font-black text-red-600 uppercase tracking-widest block">Motivated Seller</span>
-                                    <div className="text-lg font-black text-gray-900 leading-none mt-0.5">{daysRemaining} Days Left</div>
+                                    <span className="text-[10px] md:text-xs font-black text-red-600 uppercase tracking-widest block">Motivated Seller</span>
+                                    <div className="text-base md:text-lg font-black text-gray-900 leading-none mt-0.5">{daysRemaining} Days Left</div>
                                 </div>
                             </div>
                         )}
                     </div>
 
                     {/* Main Image */}
-                    <div className="relative h-[450px] w-full rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-100 group">
+                    <div className="relative h-[280px] sm:h-[350px] md:h-[450px] w-full rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-100 group">
                         <img src={property.image_url} alt={property.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                        <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-md text-gray-900 px-5 py-2 rounded-2xl text-[10px] font-black shadow-2xl border border-white/20 uppercase tracking-[0.2em]">
+                        <div className="absolute top-4 md:top-6 left-4 md:left-6 bg-white/95 backdrop-blur-md text-gray-900 px-3 md:px-5 py-1.5 md:py-2 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black shadow-2xl border border-white/20 uppercase tracking-[0.2em]">
                             Verification Active
                         </div>
                     </div>
 
-                    {/* Description & Price - USER REQUEST: Listing price right below property description */}
-                    <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-50">
-                        <h3 className="text-lg font-black mb-4 uppercase tracking-widest text-gray-400 flex items-center gap-2">
+                    {/* MOBILE ONLY: Bidding Section - Show right after image */}
+                    <div className="lg:hidden">
+                        <div className="bg-white p-5 md:p-8 rounded-3xl md:rounded-[3rem] shadow-2xl border border-gray-50 relative overflow-hidden">
+                            <div className="mb-6 md:mb-10">
+                                <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1.5 md:mb-2">Bidding Portal</p>
+                                <h3 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Place Official <span className="text-gold-dark">Offer</span></h3>
+                            </div>
+
+                            {/* Benchmark Display */}
+                            <div className="space-y-2 md:space-y-3 mb-6 md:mb-10">
+                                {[
+                                    { label: 'Owner Ask', val: ownerPrice, color: 'text-gray-900' },
+                                    { label: 'Market Base', val: marketPrice, color: 'text-gray-500' },
+                                    { label: 'AI Valuation', val: aiPrice, color: 'text-gold-dark font-black ring-2 ring-gold/10 px-2 rounded-lg' },
+                                ].map((item, idx) => (
+                                    <div key={idx} className="flex justify-between items-center py-2 px-2.5 md:px-3 hover:bg-gray-50 rounded-xl transition-colors">
+                                        <span className="text-[9px] md:text-[10px] uppercase tracking-widest font-bold text-gray-400">{item.label}</span>
+                                        <span className={`text-sm ${item.color}`}>{formatPrice(item.val)}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="space-y-6 md:space-y-8">
+                                <div>
+                                    <div className="flex items-center justify-between mb-3 md:mb-4">
+                                        <h4 className="text-[10px] md:text-xs font-black text-gray-900 uppercase tracking-widest">Your Bid Strategy</h4>
+                                        <button onClick={() => setBidType(bidType === 'slider' ? 'manual' : 'slider')} className="text-[9px] md:text-[10px] font-black text-gold hover:underline uppercase tracking-tighter">
+                                            Switch to {bidType === 'slider' ? 'Manual' : 'Slider'}
+                                        </button>
+                                    </div>
+
+                                    {bidType === 'slider' ? (
+                                        <div className="space-y-4 md:space-y-6">
+                                            <div className="flex justify-between text-[10px] md:text-[11px] font-black text-gray-900 uppercase tracking-widest px-1">
+                                                <span className="text-gold-dark">Floor: {formatPrice(minAllowed)}</span>
+                                                <span>Cap: {formatPrice(maxAllowed)}</span>
+                                            </div>
+                                            <div className="relative pt-1">
+                                                <input
+                                                    type="range"
+                                                    min={minAllowed}
+                                                    max={maxAllowed}
+                                                    step="10000"
+                                                    value={sliderValue}
+                                                    onChange={(e) => setSliderValue(parseFloat(e.target.value))}
+                                                    className="w-full h-3 bg-gray-100 rounded-full appearance-none cursor-pointer accent-gold border border-gray-100"
+                                                />
+                                            </div>
+                                            <div className="bg-gray-50 p-5 md:p-6 rounded-2xl md:rounded-[2rem] border border-gray-100 text-center shadow-inner">
+                                                <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Contract Valuation</p>
+                                                <p className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">{formatPrice(sliderValue)}</p>
+                                                <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 md:px-3 py-1 bg-white border border-gray-100 rounded-full text-[8px] md:text-[9px] font-black uppercase text-gold-dark">
+                                                    {sliderValue > aiPrice ? <TrendingUp size={10} /> : <TrendingUp size={10} className="rotate-180" />}
+                                                    {Math.abs(((sliderValue - aiPrice) / aiPrice) * 100).toFixed(1)}% vs. AI
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="relative">
+                                            <input
+                                                type="number"
+                                                value={manualBidAmount}
+                                                onChange={(e) => setManualBidAmount(e.target.value)}
+                                                placeholder="Enter exact offer amount"
+                                                className="w-full px-5 md:px-6 py-4 md:py-5 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-[2rem] text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-4 focus:ring-gold/10 focus:border-gold transition-all text-lg md:text-xl font-black"
+                                            />
+                                            <span className="absolute right-5 md:right-6 top-1/2 -translate-y-1/2 font-black text-gray-300 text-sm md:text-base">INR</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button
+                                    onClick={handlePlaceBid}
+                                    disabled={isBidding}
+                                    className="w-full py-4 md:py-5 bg-gray-900 hover:bg-black text-white font-black uppercase tracking-[0.2em] text-[10px] md:text-xs rounded-2xl md:rounded-[2rem] transition-all shadow-2xl shadow-gray-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                                >
+                                    {isBidding ? <div className="animate-spin h-4 w-4 border-2 border-white/50 border-t-white rounded-full"></div> : <span>Seal Official Bid</span>}
+                                </button>
+
+                                <div className="p-3 md:p-4 bg-gray-50/50 rounded-xl md:rounded-2xl border border-dashed border-gray-200 text-center">
+                                    <p className="text-[8px] md:text-[9px] font-bold text-gray-400 leading-relaxed uppercase tracking-widest">
+                                        By sealing, you authorize a 24-hour exclusive window upon acceptance. Market manipulation is prohibited.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Description & Price */}
+                    <div className="bg-white p-6 md:p-10 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-gray-50">
+                        <h3 className="text-base md:text-lg font-black mb-3 md:mb-4 uppercase tracking-widest text-gray-400 flex items-center gap-2">
                             Executive Summary
                         </h3>
-                        <p className="text-gray-600 leading-relaxed text-lg font-light mb-8">
+                        <p className="text-gray-600 leading-relaxed text-base md:text-lg font-light mb-6 md:mb-8">
                             {property.description}
                         </p>
 
-                        <div className="pt-8 border-t border-gray-50 flex items-center justify-between">
+                        <div className="pt-6 md:pt-8 border-t border-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Official Owner Asking Price</p>
-                                <p className="text-4xl font-black text-gray-900 tracking-tight">{formatPrice(ownerPrice)}</p>
+                                <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Official Owner Asking Price</p>
+                                <p className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">{formatPrice(ownerPrice)}</p>
                             </div>
-                            <div className="flex gap-4">
-                                <div className="bg-gray-50 rounded-2xl px-6 py-4 border border-gray-100 text-center">
-                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Rate/Sqft</p>
-                                    <p className="text-lg font-black text-gray-900">₹{Math.round(ownerPrice / property.sqft)}</p>
+                            <div className="flex gap-3 md:gap-4 w-full sm:w-auto">
+                                <div className="flex-1 sm:flex-none bg-gray-50 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 border border-gray-100 text-center">
+                                    <p className="text-[8px] md:text-[9px] font-black text-gray-400 uppercase tracking-widest">Rate/Sqft</p>
+                                    <p className="text-base md:text-lg font-black text-gray-900">₹{Math.round(ownerPrice / property.sqft)}</p>
                                 </div>
-                                <div className="bg-gold/10 rounded-2xl px-6 py-4 border border-gold/10 text-center">
-                                    <p className="text-[9px] font-black text-gold-dark uppercase tracking-widest">AI Status</p>
-                                    <p className="text-lg font-black text-gold-dark">{ownerPrice > aiPrice ? 'Premium' : 'Fair Value'}</p>
+                                <div className="flex-1 sm:flex-none bg-gold/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 border border-gold/10 text-center">
+                                    <p className="text-[8px] md:text-[9px] font-black text-gold-dark uppercase tracking-widest">AI Status</p>
+                                    <p className="text-base md:text-lg font-black text-gold-dark">{ownerPrice > aiPrice ? 'Premium' : 'Fair Value'}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-50 flex flex-col items-center justify-center text-center">
-                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gold mb-4"><BedDouble size={24} /></div>
-                            <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Bedrooms</span>
-                            <span className="text-2xl font-black text-gray-900">{property.bedrooms} Rooms</span>
+                    <div className="grid grid-cols-3 gap-3 md:gap-6">
+                        <div className="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-sm border border-gray-50 flex flex-col items-center justify-center text-center">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-xl md:rounded-2xl flex items-center justify-center text-gold mb-2 md:mb-4"><BedDouble size={20} className="md:w-6 md:h-6" /></div>
+                            <span className="block text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Bedrooms</span>
+                            <span className="text-lg md:text-2xl font-black text-gray-900">{property.bedrooms}</span>
                         </div>
-                        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-50 flex flex-col items-center justify-center text-center">
-                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gold mb-4"><Bath size={24} /></div>
-                            <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Bathrooms</span>
-                            <span className="text-2xl font-black text-gray-900">{property.bathrooms} Units</span>
+                        <div className="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-sm border border-gray-50 flex flex-col items-center justify-center text-center">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-xl md:rounded-2xl flex items-center justify-center text-gold mb-2 md:mb-4"><Bath size={20} className="md:w-6 md:h-6" /></div>
+                            <span className="block text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Bathrooms</span>
+                            <span className="text-lg md:text-2xl font-black text-gray-900">{property.bathrooms}</span>
                         </div>
-                        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-50 flex flex-col items-center justify-center text-center">
-                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gold mb-4"><Square size={24} /></div>
-                            <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Floor Area</span>
-                            <span className="text-2xl font-black text-gray-900">{property.sqft} SQFT</span>
+                        <div className="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-sm border border-gray-50 flex flex-col items-center justify-center text-center">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-xl md:rounded-2xl flex items-center justify-center text-gold mb-2 md:mb-4"><Square size={20} className="md:w-6 md:h-6" /></div>
+                            <span className="block text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Floor Area</span>
+                            <span className="text-lg md:text-2xl font-black text-gray-900">{property.sqft}</span>
                         </div>
                     </div>
 
                     {/* TABS: Valuation, Builder Confidence, Owner Notes */}
-                    <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 overflow-hidden">
-                        <div className="flex border-b border-gray-50 p-2 gap-2">
+                    <div className="bg-white rounded-3xl md:rounded-[2.5rem] shadow-sm border border-gray-50 overflow-hidden">
+                        <div className="flex border-b border-gray-50 p-1.5 md:p-2 gap-1.5 md:gap-2">
                             <button
                                 onClick={() => setActiveTab('valuation')}
-                                className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${activeTab === 'valuation' ? 'bg-gray-900 text-white shadow-xl' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
+                                className={`flex-1 py-3 md:py-4 text-[8px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.2em] rounded-xl md:rounded-2xl transition-all ${activeTab === 'valuation' ? 'bg-gray-900 text-white shadow-xl' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
                             >
-                                Valuation Breakdown
+                                Valuation
                             </button>
                             <button
                                 onClick={() => setActiveTab('builder')}
-                                className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${activeTab === 'builder' ? 'bg-gray-900 text-white shadow-xl' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
+                                className={`flex-1 py-3 md:py-4 text-[8px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.2em] rounded-xl md:rounded-2xl transition-all ${activeTab === 'builder' ? 'bg-gray-900 text-white shadow-xl' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
                             >
-                                Builder Confidence
+                                Builder
                             </button>
                             <button
                                 onClick={() => setActiveTab('owner')}
-                                className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${activeTab === 'owner' ? 'bg-gray-900 text-white shadow-xl' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
+                                className={`flex-1 py-3 md:py-4 text-[8px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.2em] rounded-xl md:rounded-2xl transition-all ${activeTab === 'owner' ? 'bg-gray-900 text-white shadow-xl' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
                             >
                                 Owner Notes
                             </button>
