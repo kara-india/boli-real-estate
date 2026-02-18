@@ -20,51 +20,51 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
     <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-gold/20 relative">
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative pt-24 md:pt-32 pb-16 md:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Background Decorative Blob */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-gold/5 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-gold/5 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[400px] md:w-[600px] h-[400px] md:h-[600px] bg-gold/5 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-gold/5 rounded-full blur-3xl -z-10"></div>
 
         <div className="max-w-7xl mx-auto text-center">
-          <div className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 text-gold-dark text-xs font-bold uppercase tracking-widest border border-gold/20">
+          <div className="mb-4 md:mb-6 inline-flex items-center gap-2 px-3 py-1.5 md:py-1 rounded-full bg-gold/10 text-gold-dark text-xs font-bold uppercase tracking-widest border border-gold/20">
             <Award size={14} className="text-gold" />
             V 2.0 Now Live
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-gray-900">
-            Real Estate Intelligence <br />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 md:mb-8 text-gray-900 px-4">
+            Real Estate Intelligence <br className="hidden sm:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-dark to-gold">
               & Transparent Bidding
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-500 max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed font-light px-4">
             Stop guessing prices. See the true market value backed by predictive AI and participate in fair, transparent local auctions.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-stretch sm:items-center px-4 max-w-2xl mx-auto">
             {/* CTA Handling based on session */}
             {!session ? (
               <>
-                <Link href="/listings" className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:-translate-y-1">
+                <Link href="/listings" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 bg-gray-900 text-white rounded-xl font-bold text-base md:text-lg hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:-translate-y-1 text-center">
                   Browse Properties
                 </Link>
-                <Link href="/partners" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all hover:-translate-y-1 flex items-center gap-2">
+                <Link href="/partners" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-base md:text-lg hover:bg-gray-50 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
                   Browse Partners <Users size={18} />
                 </Link>
-                <Link href="/register" className="px-8 py-4 bg-gold text-white rounded-xl font-bold text-lg hover:bg-gold-dark transition-all flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-gold/20">
+                <Link href="/register" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 bg-gold text-white rounded-xl font-bold text-base md:text-lg hover:bg-gold-dark transition-all flex items-center justify-center gap-2 hover:-translate-y-1 shadow-lg shadow-gold/20">
                   Get Started <ArrowRight size={18} />
                 </Link>
               </>
             ) : (
               <>
-                <Link href="/listings" className="px-8 py-4 bg-gold text-white rounded-xl font-bold text-lg hover:bg-gold-dark transition-all shadow-xl shadow-gold/20 hover:-translate-y-1">
+                <Link href="/listings" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 bg-gold text-white rounded-xl font-bold text-base md:text-lg hover:bg-gold-dark transition-all shadow-xl shadow-gold/20 hover:-translate-y-1 text-center">
                   Browse Properties
                 </Link>
-                <Link href="/partners" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all hover:-translate-y-1 flex items-center gap-2">
+                <Link href="/partners" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-base md:text-lg hover:bg-gray-50 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
                   Browse Partners <Users size={18} />
                 </Link>
-                <Link href="/dashboard" className="px-8 py-4 bg-gray-900 text-white border border-gray-900 rounded-xl font-bold text-lg hover:bg-black transition-all hover:-translate-y-1">
+                <Link href="/dashboard" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 bg-gray-900 text-white border border-gray-900 rounded-xl font-bold text-base md:text-lg hover:bg-black transition-all hover:-translate-y-1 text-center">
                   My Dashboard
                 </Link>
               </>

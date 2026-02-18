@@ -9,6 +9,13 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Boli - Smart Real Estate Platform",
   description: "Find your dream property in Mira Road with competitive bidding and price analytics",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
+  themeColor: '#D4AF37',
 };
 
 export default function RootLayout({
