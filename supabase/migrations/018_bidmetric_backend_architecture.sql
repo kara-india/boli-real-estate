@@ -452,9 +452,7 @@ CREATE TABLE IF NOT EXISTS anti_leak_registry (
     builder_id UUID NOT NULL REFERENCES builders(id),
     first_contact_at TIMESTAMPTZ DEFAULT now(),
     exclusivity_period_days INTEGER DEFAULT 90,
-    exclusivity_until TIMESTAMPTZ GENERATED ALWAYS AS (
-        first_contact_at + (exclusivity_period_days || ' days')::interval
-    ) STORED,
+    exclusivity_until TIMESTAMPTZ DEFAULT (now() + interval '90 days'),
     contacted_outside_platform BOOLEAN DEFAULT false,
     violation_detected BOOLEAN DEFAULT false,
     violation_evidence JSONB,
