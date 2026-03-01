@@ -1,0 +1,375 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.868,
+                            19.280
+                        ],
+                        [
+                            72.874,
+                            19.280
+                        ],
+                        [
+                            72.874,
+                            19.285
+                        ],
+                        [
+                            72.868,
+                            19.285
+                        ],
+                        [
+                            72.868,
+                            19.280
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_1",
+                "name": "Beverly Park",
+                "avg_psf": 8600,
+                "project_count": 8,
+                "color_hex": "#facc15"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.855,
+                            19.278
+                        ],
+                        [
+                            72.861,
+                            19.278
+                        ],
+                        [
+                            72.861,
+                            19.283
+                        ],
+                        [
+                            72.855,
+                            19.283
+                        ],
+                        [
+                            72.855,
+                            19.278
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_2",
+                "name": "Shrishti Complex",
+                "avg_psf": 8200,
+                "project_count": 5,
+                "color_hex": "#fef08a"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.842,
+                            19.275
+                        ],
+                        [
+                            72.848,
+                            19.275
+                        ],
+                        [
+                            72.848,
+                            19.280
+                        ],
+                        [
+                            72.842,
+                            19.280
+                        ],
+                        [
+                            72.842,
+                            19.275
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_3",
+                "name": "Green Acres",
+                "avg_psf": 7900,
+                "project_count": 6,
+                "color_hex": "#fcd34d"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.830,
+                            19.272
+                        ],
+                        [
+                            72.836,
+                            19.272
+                        ],
+                        [
+                            72.836,
+                            19.277
+                        ],
+                        [
+                            72.830,
+                            19.277
+                        ],
+                        [
+                            72.830,
+                            19.272
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_4",
+                "name": "Sunrise Villas",
+                "avg_psf": 8800,
+                "project_count": 4,
+                "color_hex": "#fbbf24"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.818,
+                            19.269
+                        ],
+                        [
+                            72.824,
+                            19.269
+                        ],
+                        [
+                            72.824,
+                            19.274
+                        ],
+                        [
+                            72.818,
+                            19.274
+                        ],
+                        [
+                            72.818,
+                            19.269
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_5",
+                "name": "Lakeview Residences",
+                "avg_psf": 9100,
+                "project_count": 7,
+                "color_hex": "#f59e0b"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.806,
+                            19.266
+                        ],
+                        [
+                            72.812,
+                            19.266
+                        ],
+                        [
+                            72.812,
+                            19.271
+                        ],
+                        [
+                            72.806,
+                            19.271
+                        ],
+                        [
+                            72.806,
+                            19.266
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_6",
+                "name": "Heritage Heights",
+                "avg_psf": 8400,
+                "project_count": 5,
+                "color_hex": "#eab308"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.794,
+                            19.263
+                        ],
+                        [
+                            72.800,
+                            19.263
+                        ],
+                        [
+                            72.800,
+                            19.268
+                        ],
+                        [
+                            72.794,
+                            19.268
+                        ],
+                        [
+                            72.794,
+                            19.263
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_7",
+                "name": "Crystal Gardens",
+                "avg_psf": 8700,
+                "project_count": 3,
+                "color_hex": "#d4af37"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.782,
+                            19.260
+                        ],
+                        [
+                            72.788,
+                            19.260
+                        ],
+                        [
+                            72.788,
+                            19.265
+                        ],
+                        [
+                            72.782,
+                            19.265
+                        ],
+                        [
+                            72.782,
+                            19.260
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_8",
+                "name": "Royal Enclave",
+                "avg_psf": 9500,
+                "project_count": 9,
+                "color_hex": "#fcd34d"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.770,
+                            19.257
+                        ],
+                        [
+                            72.776,
+                            19.257
+                        ],
+                        [
+                            72.776,
+                            19.262
+                        ],
+                        [
+                            72.770,
+                            19.262
+                        ],
+                        [
+                            72.770,
+                            19.257
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_9",
+                "name": "Mira Gardens",
+                "avg_psf": 8000,
+                "project_count": 2,
+                "color_hex": "#fbbf24"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            72.758,
+                            19.254
+                        ],
+                        [
+                            72.764,
+                            19.254
+                        ],
+                        [
+                            72.764,
+                            19.259
+                        ],
+                        [
+                            72.758,
+                            19.259
+                        ],
+                        [
+                            72.758,
+                            19.254
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "area_id": "area_10",
+                "name": "Sunset Park",
+                "avg_psf": 8300,
+                "project_count": 4,
+                "color_hex": "#f59e0b"
+            }
+        }
+    ]
+}

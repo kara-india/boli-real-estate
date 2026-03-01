@@ -1,0 +1,22 @@
+{
+    "prop_1": {
+        "property_id": "prop_1",
+        "lat": 19.2841,
+        "lng": 72.8688,
+        "avg_psf": 8600,
+        "predicted_price_5y": 10500,
+        "roi_5y": 22.1,
+        "name": "Lodha Aqua",
+        "builder": "Lodha Group"
+    },
+    "prop_2": {
+        "property_id": "prop_2",
+        "lat": 19.2852,
+        "lng": 72.8695,
+        "avg_psf": 9100,
+        "predicted_price_5y": 11800,
+        "roi_5y": 29.6,
+        "name": "Kalpataru Srishti",
+        "builder": "Kalpataru"
+    }
+}

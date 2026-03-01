@@ -34,5 +34,5 @@ jobs:
     - name: Build Next.js Application
       run: npm run build
       env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        NEXT_PUBLIC_SUPABASE_URL: "https://iwgopllwmpesnpsnqlwn.supabase.co"
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3Z29wbGx3bXBlc25wc25xbHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0Nzk1OTMsImV4cCI6MjA4NjA1NTU5M30.KfXGpeXxlexUz3wrsqDUNp_2pclHB1pR9e9tPkP-qT0"

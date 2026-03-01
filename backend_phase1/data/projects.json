@@ -1,0 +1,55 @@
+{
+    "area_1": [
+        {
+            "project_id": "proj_1",
+            "name": "Lodha Aqua",
+            "builder": "Lodha Group",
+            "lat": 19.2841,
+            "lng": 72.8688,
+            "avg_psf": 8600,
+            "predicted_price_5y": 10500,
+            "roi_5y": 22.1
+        },
+        {
+            "project_id": "proj_2",
+            "name": "Kalpataru Srishti",
+            "builder": "Kalpataru",
+            "lat": 19.2852,
+            "lng": 72.8695,
+            "avg_psf": 9100,
+            "predicted_price_5y": 11800,
+            "roi_5y": 29.6
+        },
+        {
+            "project_id": "proj_3",
+            "name": "Shree Residency",
+            "builder": "Shree Builders",
+            "lat": 19.2835,
+            "lng": 72.8679,
+            "avg_psf": 8400,
+            "predicted_price_5y": 10200,
+            "roi_5y": 21.4
+        },
+        {
+            "project_id": "proj_4",
+            "name": "Sunrise Villas",
+            "builder": "Sunrise Constructions",
+            "lat": 19.2860,
+            "lng": 72.8700,
+            "avg_psf": 8800,
+            "predicted_price_5y": 11200,
+            "roi_5y": 27.3
+        },
+        {
+            "project_id": "proj_5",
+            "name": "Lakeview Residences",
+            "builder": "Lakeview Developers",
+            "lat": 19.2845,
+            "lng": 72.8680,
+            "avg_psf": 9100,
+            "predicted_price_5y": 11900,
+            "roi_5y": 30.8
+        }
+    ],
+    "area_2": []
+}
