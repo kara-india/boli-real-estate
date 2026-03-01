@@ -1,0 +1,44 @@
+{
+  "tasks": {
+    "task-1772355884175-x7qnpb": {
+      "taskId": "task-1772355884175-x7qnpb",
+      "type": "research",
+      "description": "Scrape real estate data for Mira Road including historical pricing trends and rental yields",
+      "priority": "normal",
+      "status": "pending",
+      "progress": 0,
+      "assignedTo": [],
+      "tags": [],
+      "createdAt": "2026-03-01T09:04:44.175Z",
+      "startedAt": null,
+      "completedAt": null
+    },
+    "task-1772367745823-7o7i04": {
+      "taskId": "task-1772367745823-7o7i04",
+      "type": "review",
+      "description": "Analyze recent Supabase migrations (012 to 017) to ensure proper security RLS policies, data relationships, and role registration schemas.",
+      "priority": "normal",
+      "status": "pending",
+      "progress": 0,
+      "assignedTo": [],
+      "tags": [],
+      "createdAt": "2026-03-01T12:22:25.823Z",
+      "startedAt": null,
+      "completedAt": null
+    },
+    "task-1772367926435-tw986z": {
+      "taskId": "task-1772367926435-tw986z",
+      "type": "implementation",
+      "description": "Convert scraped CSV data from data/mira_road_properties_20260301_174958.csv to data/properties_seed_v2.json format for Supabase seeding",
+      "priority": "normal",
+      "status": "pending",
+      "progress": 0,
+      "assignedTo": [],
+      "tags": [],
+      "createdAt": "2026-03-01T12:25:26.435Z",
+      "startedAt": null,
+      "completedAt": null
+    }
+  },
+  "version": "3.0.0"
+}

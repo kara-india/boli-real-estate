@@ -1,0 +1,135 @@
+{
+  "running": true,
+  "startedAt": "2026-03-01T06:47:07.727Z",
+  "workers": {
+    "map": {
+      "runCount": 25,
+      "successCount": 25,
+      "failureCount": 0,
+      "averageDurationMs": 1.1199999999999997,
+      "isRunning": false,
+      "nextRun": "2026-03-01T13:02:07.996Z",
+      "lastRun": "2026-03-01T12:47:07.995Z"
+    },
+    "audit": {
+      "runCount": 37,
+      "successCount": 37,
+      "failureCount": 0,
+      "averageDurationMs": 1.2162162162162162,
+      "isRunning": false,
+      "nextRun": "2026-03-01T12:49:08.112Z",
+      "lastRun": "2026-03-01T12:49:08.127Z"
+    },
+    "optimize": {
+      "runCount": 24,
+      "successCount": 24,
+      "failureCount": 0,
+      "averageDurationMs": 0.625,
+      "isRunning": false,
+      "nextRun": "2026-03-01T12:51:07.975Z",
+      "lastRun": "2026-03-01T12:36:07.974Z"
+    },
+    "consolidate": {
+      "runCount": 12,
+      "successCount": 12,
+      "failureCount": 0,
+      "averageDurationMs": 1.0833333333333333,
+      "isRunning": false,
+      "nextRun": "2026-03-01T12:53:07.861Z",
+      "lastRun": "2026-03-01T12:23:07.861Z"
+    },
+    "testgaps": {
+      "runCount": 18,
+      "successCount": 18,
+      "failureCount": 0,
+      "averageDurationMs": 0.8333333333333334,
+      "isRunning": false,
+      "nextRun": "2026-03-01T12:55:07.884Z",
+      "lastRun": "2026-03-01T12:35:07.884Z"
+    },
+    "predict": {
+      "runCount": 0,
+      "successCount": 0,
+      "failureCount": 0,
+      "averageDurationMs": 0,
+      "isRunning": false
+    },
+    "document": {
+      "runCount": 0,
+      "successCount": 0,
+      "failureCount": 0,
+      "averageDurationMs": 0,
+      "isRunning": false
+    }
+  },
+  "config": {
+    "autoStart": false,
+    "logDir": "C:\\Users\\Karan Jha\\.gemini\\antigravity\\scratch\\real_estate_platform\\.claude-flow\\logs",
+    "stateFile": "C:\\Users\\Karan Jha\\.gemini\\antigravity\\scratch\\real_estate_platform\\.claude-flow\\daemon-state.json",
+    "maxConcurrent": 2,
+    "workerTimeoutMs": 300000,
+    "resourceThresholds": {
+      "maxCpuLoad": 2,
+      "minFreeMemoryPercent": 20
+    },
+    "workers": [
+      {
+        "type": "map",
+        "intervalMs": 900000,
+        "offsetMs": 0,
+        "priority": "normal",
+        "description": "Codebase mapping",
+        "enabled": true
+      },
+      {
+        "type": "audit",
+        "intervalMs": 600000,
+        "offsetMs": 120000,
+        "priority": "critical",
+        "description": "Security analysis",
+        "enabled": true
+      },
+      {
+        "type": "optimize",
+        "intervalMs": 900000,
+        "offsetMs": 240000,
+        "priority": "high",
+        "description": "Performance optimization",
+        "enabled": true
+      },
+      {
+        "type": "consolidate",
+        "intervalMs": 1800000,
+        "offsetMs": 360000,
+        "priority": "low",
+        "description": "Memory consolidation",
+        "enabled": true
+      },
+      {
+        "type": "testgaps",
+        "intervalMs": 1200000,
+        "offsetMs": 480000,
+        "priority": "normal",
+        "description": "Test coverage analysis",
+        "enabled": true
+      },
+      {
+        "type": "predict",
+        "intervalMs": 600000,
+        "offsetMs": 0,
+        "priority": "low",
+        "description": "Predictive preloading",
+        "enabled": false
+      },
+      {
+        "type": "document",
+        "intervalMs": 3600000,
+        "offsetMs": 0,
+        "priority": "low",
+        "description": "Auto-documentation",
+        "enabled": false
+      }
+    ]
+  },
+  "savedAt": "2026-03-01T12:49:08.127Z"
+}
