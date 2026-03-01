@@ -1,0 +1,27 @@
+=== Data Quality Report ===
+Total Rows: 10000
+Missing Values:
+transaction_id             0
+property_id                0
+transaction_date           0
+listing_date               0
+city                       0
+locality                   0
+postal_code                0
+property_type              0
+sale_type                  0
+buyer_type                 0
+bedrooms                   0
+bathrooms                  0
+area_sqft                  0
+price                      0
+price_per_sqft             0
+source                     0
+source_scrape_timestamp    0
+rera_status                0
+builder_rating             0
+infrastructure_score       0
+macro_repo_rate            0
+dtype: int64
+Price Range: 1742637 - 86033120
+Duplicates: 8
