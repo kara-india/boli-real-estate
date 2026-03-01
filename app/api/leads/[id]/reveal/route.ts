@@ -22,7 +22,7 @@ export async function POST(
     } catch (error: any) {
         console.error('Lead reveal error:', error);
         if (error instanceof z.ZodError) {
-            return NextResponse.json({ success: false, error: error.errors }, { status: 400 });
+            return NextResponse.json({ success: false, error: (error as any).errors }, { status: 400 });
         }
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
