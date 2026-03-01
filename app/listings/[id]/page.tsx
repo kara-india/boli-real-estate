@@ -171,10 +171,12 @@ export default function PropertyDetailsPage() {
 
     const ownerPrice = property?.original_listing_price || property?.price || 0
     const marketPrice = property?.market_price || valuation?.marketPrice || 0
-    // NEW: Prefer ML Output if successfully fetched
-    const aiPrice = mlPrediction?.baseline_current_value_inr || valuation?.aiValuation || property?.bidmetric_price || 0
+    const aiPrice = valuation?.aiValuation || property?.bidmetric_price || 0
 
-    // Bounds Calculation based on User's Rules
+    // NEW: ML Future Value 
+    const mlPrice = mlPrediction?.forecast_trajectory[mlPrediction.forecast_trajectory.length - 1]?.expected_value || aiPrice
+
+    // Bounds Calculation based on User's Rules (based on present value)
     let minAllowed = 0
     let maxAllowed = aiPrice * 1.05
 
@@ -276,7 +278,8 @@ export default function PropertyDetailsPage() {
                                 {[
                                     { label: 'Owner Ask', val: ownerPrice, color: 'text-gray-900' },
                                     { label: 'Market Base', val: marketPrice, color: 'text-gray-500' },
-                                    { label: 'ML Model Price', val: aiPrice, color: 'text-gold-dark font-black ring-2 ring-gold/10 px-2 rounded-lg' },
+                                    { label: 'AI Present Value', val: aiPrice, color: 'text-gold-dark font-black' },
+                                    { label: '5-Yr ML Forecast', val: mlPrice, color: 'text-green-600 font-black ring-2 ring-green-600/10 px-2 rounded-lg' },
                                 ].map((item, idx) => (
                                     <div key={idx} className="flex justify-between items-center py-2 px-2.5 md:px-3 hover:bg-gray-50 rounded-xl transition-colors">
                                         <span className="text-[9px] md:text-[10px] uppercase tracking-widest font-bold text-gray-400">{item.label}</span>
@@ -554,14 +557,15 @@ export default function PropertyDetailsPage() {
                             <h3 className="text-3xl font-black text-gray-900 tracking-tight">Place Official <span className="text-gold-dark">Offer</span></h3>
                         </div>
 
-                        {/* Benchmark Display - USER REQUESTED: Show all 3 values */}
-                        <div className="space-y-3 mb-10">
+                        {/* Benchmark Display - USER REQUESTED: Show all values */}
+                        <div className="space-y-3 mb-10 w-full">
                             {[
                                 { label: 'Owner Ask', val: ownerPrice, color: 'text-gray-900' },
                                 { label: 'Market Base', val: marketPrice, color: 'text-gray-500' },
-                                { label: 'ML Model Price', val: aiPrice, color: 'text-gold-dark font-black ring-2 ring-gold/10 px-2 rounded-lg' },
+                                { label: 'AI Present Value', val: aiPrice, color: 'text-gold-dark font-black' },
+                                { label: '5-Yr ML Forecast', val: mlPrice, color: 'text-green-600 font-black ring-2 ring-green-600/10 px-2 rounded-lg' },
                             ].map((item, idx) => (
-                                <div key={idx} className="flex justify-between items-center py-2 px-3 hover:bg-gray-50 rounded-xl transition-colors">
+                                <div key={idx} className="flex justify-between items-center py-2 px-3 hover:bg-gray-50 rounded-xl transition-colors w-full">
                                     <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">{item.label}</span>
                                     <span className={`text-sm ${item.color}`}>{formatPrice(item.val)}</span>
                                 </div>
