@@ -12,7 +12,7 @@ type Property = {
     title: string
     description: string
     price: number // Owner price
-    bidmetric_price: number // AI price
+    bidmetric_price: number // ML price
     location: string
     sqft: number
     type: string
@@ -63,7 +63,7 @@ export default function ListingsPage() {
                     <div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 text-gold-dark text-[10px] font-bold uppercase tracking-widest mb-3 border border-gold/20">
                             <ShieldCheck size={12} />
-                            Verified by BidMetric AI
+                            Verified by ML Prediction
                         </div>
                         <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">
                             Premier Property <span className="text-gold-dark">Listings</span>
@@ -123,7 +123,7 @@ export default function ListingsPage() {
                                         {/* AI Valuation Overlap */}
                                         <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur px-4 py-3 rounded-xl border border-white/20 shadow-lg flex items-center justify-between">
                                             <div>
-                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">BidMetric Price</p>
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">BidMetric ML Price</p>
                                                 <p className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-dark to-gold">
                                                     {formatPrice(property.bidmetric_price || property.price)}
                                                 </p>

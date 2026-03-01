@@ -70,6 +70,8 @@ export default function PropertyDetailsPage() {
     // UI State
     const [activeTab, setActiveTab] = useState<'valuation' | 'builder' | 'owner'>('valuation')
 
+    const [mlPrediction, setMlPrediction] = useState<any>(null)
+
     const supabase = createClient()
     const { session } = useSupabase()
 
@@ -91,18 +93,48 @@ export default function PropertyDetailsPage() {
             setProperty(propData)
 
             if (propData) {
-                // Use the Area Base Rate (Market Price) to drive the engine
                 const areaBaseRate = (propData.market_price / propData.sqft) || 8000;
 
-                const mockTrends = [
-                    { date: '2025-01-01', avg_price_per_sqft: areaBaseRate * 0.92 },
-                    { date: '2025-04-01', avg_price_per_sqft: areaBaseRate * 0.94 },
-                    { date: '2025-07-01', avg_price_per_sqft: areaBaseRate * 0.96 },
-                    { date: '2025-10-01', avg_price_per_sqft: areaBaseRate * 0.98 },
-                    { date: '2026-01-01', avg_price_per_sqft: areaBaseRate * 1.0 },
-                ]
-                setTrends(mockTrends)
+                // ----------------------------------------
+                // 1. Fetch ML Prediction from XGBoost API
+                // ----------------------------------------
+                try {
+                    const mlRes = await fetch('/api/ml/predict/horizon', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            property: {
+                                locality: propData.locality || propData.location,
+                                property_type: propData.type,
+                                sale_type: 'Resale',
+                                area_sqft: propData.sqft,
+                                bedrooms: propData.bedrooms,
+                                bathrooms: propData.bathrooms,
+                                builder_rating: propData.builder_confidence_score || 75,
+                                infrastructure_score: 8
+                            },
+                            macro: { forecast_horizon_years: 5 }
+                        })
+                    });
 
+                    if (mlRes.ok) {
+                        const mlData = await mlRes.json()
+                        setMlPrediction(mlData)
+
+                        // Map ML trajectory to trends chart format
+                        const mappedTrends = mlData.forecast_trajectory.map((t: any) => ({
+                            date: `${t.year}-01-01`,
+                            avg_price_per_sqft: Math.round(t.expected_value / propData.sqft)
+                        }))
+                        setTrends(mappedTrends)
+                    }
+                } catch (e) {
+                    console.error("ML Prediction Error:", e)
+                }
+
+                // ----------------------------------------
+                // 2. Original Valuation Logic Fallback
+                // ----------------------------------------
                 const valuationData = generatePropertyValuation({
                     propertyId: propData.id,
                     sqft: propData.sqft,
@@ -119,8 +151,6 @@ export default function PropertyDetailsPage() {
                     dataCompleteness: 90
                 })
                 setValuation(valuationData)
-
-                // Initialize slider at the AI Calculated Price
                 setSliderValue(valuationData.aiValuation)
             }
             setIsLoading(false)
@@ -141,7 +171,8 @@ export default function PropertyDetailsPage() {
 
     const ownerPrice = property?.original_listing_price || property?.price || 0
     const marketPrice = property?.market_price || valuation?.marketPrice || 0
-    const aiPrice = valuation?.aiValuation || property?.bidmetric_price || 0
+    // NEW: Prefer ML Output if successfully fetched
+    const aiPrice = mlPrediction?.baseline_current_value_inr || valuation?.aiValuation || property?.bidmetric_price || 0
 
     // Bounds Calculation based on User's Rules
     let minAllowed = 0
@@ -245,7 +276,7 @@ export default function PropertyDetailsPage() {
                                 {[
                                     { label: 'Owner Ask', val: ownerPrice, color: 'text-gray-900' },
                                     { label: 'Market Base', val: marketPrice, color: 'text-gray-500' },
-                                    { label: 'AI Valuation', val: aiPrice, color: 'text-gold-dark font-black ring-2 ring-gold/10 px-2 rounded-lg' },
+                                    { label: 'ML Model Price', val: aiPrice, color: 'text-gold-dark font-black ring-2 ring-gold/10 px-2 rounded-lg' },
                                 ].map((item, idx) => (
                                     <div key={idx} className="flex justify-between items-center py-2 px-2.5 md:px-3 hover:bg-gray-50 rounded-xl transition-colors">
                                         <span className="text-[9px] md:text-[10px] uppercase tracking-widest font-bold text-gray-400">{item.label}</span>
@@ -285,7 +316,7 @@ export default function PropertyDetailsPage() {
                                                 <p className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">{formatPrice(sliderValue)}</p>
                                                 <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 md:px-3 py-1 bg-white border border-gray-100 rounded-full text-[8px] md:text-[9px] font-black uppercase text-gold-dark">
                                                     {sliderValue > aiPrice ? <TrendingUp size={10} /> : <TrendingUp size={10} className="rotate-180" />}
-                                                    {Math.abs(((sliderValue - aiPrice) / aiPrice) * 100).toFixed(1)}% vs. AI
+                                                    {Math.abs(((sliderValue - aiPrice) / aiPrice) * 100).toFixed(1)}% vs. ML Price
                                                 </div>
                                             </div>
                                         </div>
@@ -340,7 +371,7 @@ export default function PropertyDetailsPage() {
                                     <p className="text-base md:text-lg font-black text-gray-900">₹{Math.round(ownerPrice / property.sqft)}</p>
                                 </div>
                                 <div className="flex-1 sm:flex-none bg-gold/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 border border-gold/10 text-center">
-                                    <p className="text-[8px] md:text-[9px] font-black text-gold-dark uppercase tracking-widest">AI Status</p>
+                                    <p className="text-[8px] md:text-[9px] font-black text-gold-dark uppercase tracking-widest">ML Price Status</p>
                                     <p className="text-base md:text-lg font-black text-gold-dark">{ownerPrice > aiPrice ? 'Premium' : 'Fair Value'}</p>
                                 </div>
                             </div>
@@ -395,7 +426,7 @@ export default function PropertyDetailsPage() {
                                     <ValuationFactorsChart factors={valuation.topFactors} totalValuation={valuation.aiValuation} methodology={valuation.methodology} />
                                     <div className="space-y-6">
                                         <h3 className="text-xl font-black flex items-center gap-3">
-                                            <ShieldCheck className="text-gold" /> AI Reasoning
+                                            <ShieldCheck className="text-gold" /> ML Prediction Logic
                                         </h3>
                                         <p className="text-gray-500 leading-relaxed font-light">{valuation.methodology}</p>
                                         <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
@@ -496,7 +527,7 @@ export default function PropertyDetailsPage() {
                                 <p className="text-xs text-gray-400 font-bold mt-1">5-YEAR PRE-PROJECTED MARKET TRENDS</p>
                             </div>
                             <div className="text-right">
-                                <span className="text-xs font-black text-green-600 bg-green-50 px-3 py-1 rounded-lg border border-green-100 uppercase tracking-tighter">+12.4% Est. CAGR</span>
+                                <span className="text-xs font-black text-green-600 bg-green-50 px-3 py-1 rounded-lg border border-green-100 uppercase tracking-tighter">{mlPrediction ? `+${mlPrediction.forecast_trajectory[0].yoy_growth_pct}%` : '+12.4%'} Est. CAGR</span>
                             </div>
                         </div>
                         <div className="h-72 w-full">
@@ -528,7 +559,7 @@ export default function PropertyDetailsPage() {
                             {[
                                 { label: 'Owner Ask', val: ownerPrice, color: 'text-gray-900' },
                                 { label: 'Market Base', val: marketPrice, color: 'text-gray-500' },
-                                { label: 'AI Valuation', val: aiPrice, color: 'text-gold-dark font-black ring-2 ring-gold/10 px-2 rounded-lg' },
+                                { label: 'ML Model Price', val: aiPrice, color: 'text-gold-dark font-black ring-2 ring-gold/10 px-2 rounded-lg' },
                             ].map((item, idx) => (
                                 <div key={idx} className="flex justify-between items-center py-2 px-3 hover:bg-gray-50 rounded-xl transition-colors">
                                     <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">{item.label}</span>
@@ -568,7 +599,7 @@ export default function PropertyDetailsPage() {
                                             <p className="text-4xl font-black text-gray-900 tracking-tight">{formatPrice(sliderValue)}</p>
                                             <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-gray-100 rounded-full text-[9px] font-black uppercase text-gold-dark">
                                                 {sliderValue > aiPrice ? <TrendingUp size={10} /> : <TrendingUp size={10} className="rotate-180" />}
-                                                {Math.abs(((sliderValue - aiPrice) / aiPrice) * 100).toFixed(1)}% vs. AI
+                                                {Math.abs(((sliderValue - aiPrice) / aiPrice) * 100).toFixed(1)}% vs. ML Price
                                             </div>
                                         </div>
                                     </div>

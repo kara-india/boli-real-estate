@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-01T13:32:08.020Z",
+  "timestamp": "2026-03-01T15:02:08.091Z",
   "projectRoot": "C:\\Users\\Karan Jha\\.gemini\\antigravity\\scratch\\real_estate_platform",
   "structure": {
     "hasPackageJson": true,
@@ -7,5 +7,5 @@
     "hasClaudeConfig": true,
     "hasClaudeFlow": true
   },
-  "scannedAt": 1772371928020
+  "scannedAt": 1772377328091
 }
